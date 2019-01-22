@@ -1,8 +1,9 @@
 # Compiled class file
 *.class
-
+maven_settings.xml
 # Log file
 *.log
+target
 
 # BlueJ files
 *.ctxt

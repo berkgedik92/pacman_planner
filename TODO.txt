@@ -1,0 +1,1 @@
+1) Maze files should be in a better format (can be JSON)
