@@ -46,13 +46,13 @@ public class ApproximateQPlanner {
 	}
 
 	private Action getRandomAction(BoardState b) {
-		List<Action> actions = b.getValidActions(b.pacman.getCurPos());
+		List<Action> actions = b.getValidActions(b.pacman.getCurrentPos());
 		int rndInd = new Random().nextInt(actions.size());
 		return actions.get(rndInd);
 	}
 
 	private Action getPolicyAction(BoardState b) {
-		List<Action> validActions = b.getValidActions(b.pacman.getCurPos());
+		List<Action> validActions = b.getValidActions(b.pacman.getCurrentPos());
 		Action winner = validActions.get(0);
 		double maxQValue = Integer.MIN_VALUE, qValue;
 		for (Action a : validActions) {
@@ -86,7 +86,7 @@ public class ApproximateQPlanner {
 		double qValue = computeQValue(features);
 		// might be substituted with just state policy lookup if we kept this policy
 		double expectedQValue = next.isGameOver() ? 0 : next.getValidActions(
-			next.pacman.getCurPos()).stream().mapToDouble(x -> computeQValue(FeatureExtractor.getFeatures(next, x))).max().getAsDouble();
+			next.pacman.getCurrentPos()).stream().mapToDouble(x -> computeQValue(FeatureExtractor.getFeatures(next, x))).max().getAsDouble();
 		double difference = reward + discount * expectedQValue - qValue;
 
 		// System.err.println("GOT: " + reward + " EXPECT IN FUTURE: " + expectedQValue + " EXPECTED TO GET NOW: " + qValue);

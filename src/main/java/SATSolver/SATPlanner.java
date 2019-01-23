@@ -128,7 +128,7 @@ public class SATPlanner implements IPlanner {
     public Set<Integer> notOptimalSATSolver(BoardState state, int timeLimit)
     {
         short[] boardData = state.boardData;
-        Position pacmanPos = state.pacman.getCurPos();
+        Position pacmanPos = state.pacman.getCurrentPos();
         List<Monster> monsters = state.monsters;
         int colAmount = state.colAmount;
         int rowAmount = state.rowAmount;
@@ -271,7 +271,7 @@ public class SATPlanner implements IPlanner {
             //There must be no collisions (I'm not sure if this part is correct, I need to check it later)
             for (int m = 0; m < monsters.size(); m++) {
                 Monster currentMonster = monsters.get(m);
-                Position cPos = new Position(currentMonster.getCurPos().y, currentMonster.getCurPos().x);
+                Position cPos = new Position(currentMonster.getCurrentPos().y, currentMonster.getCurrentPos().x);
                 Action[] actions = currentMonster.giveActionsToDo(timeLimit);
 
                 Position[] allPos = new Position[timeLimit];
