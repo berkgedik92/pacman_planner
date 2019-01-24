@@ -3,9 +3,6 @@ package Game;
 import java.util.Map;
 import java.util.HashMap;
 
-/**
- * Created by USER on 9/30/2016.
- */
 public enum Action {
     STOP(0), UP(2), DOWN(8), LEFT(1), RIGHT(4);
 

@@ -94,6 +94,7 @@ public class Game extends JFrame implements Runnable, IBoardStateObserver {
 
         state = new BoardState(colAmount, rowAmount, boardData, initialPositions);
         state.attachObserver(Board.getInstance());
+        state.attachObserver(this);
 
         //Get monster actions (if there is any and if we run in deterministic mode)
         if ((boolean) config.getConfig("deterministic_monsters")) {//config.isMonstersDeterministic()) {

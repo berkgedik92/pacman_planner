@@ -4,9 +4,6 @@ import Game.Action;
 import Game.BoardState;
 import java.util.List;
 
-/**
- * Created by USER on 10/7/2016.
- */
 public interface IPlanner {
     Action getNextAction(BoardState state);
     IPlanner reset();   /*in order to get a clean planner (if we will call planner several times, we need a clear cache)
