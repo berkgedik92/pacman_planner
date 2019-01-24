@@ -9,7 +9,7 @@ package OnlinePlanner;
 
 import Game.*;
 
-public class FeatureExtractor {
+class FeatureExtractor {
 	/**
 	 * Array of features for pacman boards with the following elements:
 	 * 0 - bias feature
@@ -19,9 +19,9 @@ public class FeatureExtractor {
 	 * 4 - is it a repeated action for pacman (small loop of length 2)
 	 */
 	
-	public static final int FEATURES_NUM = 5;
+	static final int FEATURES_NUM = 5;
 
-	public static final double[] getFeatures(BoardState state, Action nextAction) {
+	static double[] getFeatures(BoardState state, Action nextAction) {
 		double[] features = new double[FEATURES_NUM];
 		features[0] = 1;
 

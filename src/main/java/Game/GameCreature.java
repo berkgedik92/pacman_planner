@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public abstract class GameCreature {
+abstract class GameCreature {
 	public Position currentPosition;
     public Position oldPosition;
 }

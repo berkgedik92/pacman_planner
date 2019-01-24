@@ -70,27 +70,28 @@ public class Config {
 
             if (cmd.hasOption("planner")) {
                 String plannerStr = cmd.getOptionValue("planner");
-                if (plannerStr.equals("astar")) {
-                    System.out.println("A* algorithm will be used as planner");
-                    parsedConfiguration.isMonstersDeterministic = true;
-                    parsedConfiguration.planner = new AStarPlanner();
-                }
-                else if (plannerStr.equals("sat")) {
-                    System.out.println("SAT solver algorithm will be used as planner");
-                    parsedConfiguration.isMonstersDeterministic = true;
-                    parsedConfiguration.planner = new SATPlanner();
-                }
-                else if (plannerStr.equals("ff")) {
-                    System.out.println("JavaFF algorithm will be used as planner");
-                    parsedConfiguration.isMonstersDeterministic = true;
-                    parsedConfiguration.planner = new JavaFF();
-                }
-                else if (plannerStr.equals("online")) {
-                    parsedConfiguration.isOnlinePlanning = true;
-                    parsedConfiguration.isMonstersDeterministic = cmd.hasOption("deterministic");
-                }
-                else {
-                    throw new ParseException("Invalid option for 'planner' parameter. Planner parameter must be astar, sat, ff or online");
+                switch (plannerStr) {
+                    case "astar":
+                        System.out.println("A* algorithm will be used as planner");
+                        parsedConfiguration.isMonstersDeterministic = true;
+                        parsedConfiguration.planner = new AStarPlanner();
+                        break;
+                    case "sat":
+                        System.out.println("SAT solver algorithm will be used as planner");
+                        parsedConfiguration.isMonstersDeterministic = true;
+                        parsedConfiguration.planner = new SATPlanner();
+                        break;
+                    case "ff":
+                        System.out.println("JavaFF algorithm will be used as planner");
+                        parsedConfiguration.isMonstersDeterministic = true;
+                        parsedConfiguration.planner = new JavaFF();
+                        break;
+                    case "online":
+                        parsedConfiguration.isOnlinePlanning = true;
+                        parsedConfiguration.isMonstersDeterministic = cmd.hasOption("deterministic");
+                        break;
+                    default:
+                        throw new ParseException("Invalid option for 'planner' parameter. Planner parameter must be astar, sat, ff or online");
                 }
             }
 

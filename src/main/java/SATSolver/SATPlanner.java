@@ -11,24 +11,24 @@ import java.util.Set;
 
 public class SATPlanner implements IPlanner {
 
-    public static boolean testMode = false;
-
+    private static final boolean testMode = false;
+    private static final long threshold = 3000000;
     private boolean first = true;
 
     public IPlanner reset() {
         return this;
     }
 
-    public void writeToFile(int timeLimit, BoardState state, List<SATClause> clauses) {
+    private void writeToFile(int timeLimit, BoardState state, List<SATClause> clauses) {
         try {
             Config config = Config.getInstance();
             PrintWriter w = new PrintWriter(new File(config.getMazeFile() + ".cnf"));
 
             w.println("p cnf " + timeLimit * state.colAmount * state.rowAmount + " " + clauses.size());
-            for (int i = 0; i < clauses.size(); i++) {
-                int[] atoms = clauses.get(i).atoms;
-                for (int j = 0; j < atoms.length; j++)
-                    w.print(atoms[j] + " ");
+            for (SATClause clause : clauses) {
+                int[] atoms = clause.atoms;
+                for (int atom : atoms)
+                    w.print(atom + " ");
                 w.println("0");
             }
 
@@ -37,8 +37,6 @@ public class SATPlanner implements IPlanner {
             e.printStackTrace();
         }
     }
-
-    private final static long threshold = 3000000;
 
     public List<Action> makePlan(BoardState state) {
         int lowerBound = state.remainingDotAmount;
@@ -123,7 +121,7 @@ public class SATPlanner implements IPlanner {
         return result;
     }
 
-    public Set<Integer> notOptimalSATSolver(BoardState state, int timeLimit)
+    private Set<Integer> notOptimalSATSolver(BoardState state, int timeLimit)
     {
         short[] boardData = state.boardData;
         Position pacmanPos = state.pacman.getCurrentPosition();
@@ -267,8 +265,7 @@ public class SATPlanner implements IPlanner {
 
         try {
             //There must be no collisions (I'm not sure if this part is correct, I need to check it later)
-            for (int m = 0; m < monsters.size(); m++) {
-                Monster currentMonster = monsters.get(m);
+            for (Monster currentMonster : monsters) {
                 Position cPos = new Position(currentMonster.getCurrentPosition().y, currentMonster.getCurrentPosition().x);
                 Action[] actions = currentMonster.giveActionsToDo(timeLimit);
 

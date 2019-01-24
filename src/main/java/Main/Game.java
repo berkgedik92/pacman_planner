@@ -10,7 +10,7 @@ import Game.*;
 
 public class Game extends JFrame {
 
-    public Game() {
+    private Game() {
 
         Config config = Config.getInstance();
         List<String> lines;
@@ -47,7 +47,7 @@ public class Game extends JFrame {
 
         Board.setInstance(boardData, rowAmount, colAmount, initialPositions);
 
-        //Get monster actions (if there is any)
+        //Get monster actions (if there is any and if we run in deterministic mode)
         if (config.isMonstersDeterministic()) {
             List<Action[]> monsterActions = new ArrayList<>();
             for (int i = 0; i < monsterAmount; i++) {

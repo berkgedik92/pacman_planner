@@ -22,7 +22,7 @@ public class BoardState {
 
     /* Helper fields */
     public int remainingDotAmount;
-    public boolean isPacmanDead = false;
+    public boolean isPacmanDead;
 
     /*GameCreatures*/
     public Pacman pacman;
@@ -54,7 +54,7 @@ public class BoardState {
             monsters.get(i).setPolicy(monsterActions.get(i));
     }
 
-    public BoardState(BoardState state, Action action) throws Exception {
+    public BoardState(BoardState state, Action action) {
 
         this.colAmount = state.colAmount;
         this.rowAmount = state.rowAmount;
@@ -103,11 +103,11 @@ public class BoardState {
         }
     }
 
-    public short[] getBoardDataCopy() {
+    private short[] getBoardDataCopy() {
         int totalCell = colAmount * rowAmount;
         short[] copyData = new short[boardData.length];
-        for (int i = 0; i < totalCell; i++)
-            copyData[i] = boardData[i];
+        if (totalCell >= 0)
+            System.arraycopy(boardData, 0, copyData, 0, totalCell);
         return copyData;
     }
 
@@ -140,8 +140,7 @@ public class BoardState {
         Position pacmanNextPos = Position.giveConsequence(pacmanPos, action);
 
         //Check if there is a monster
-        for (int i = 0; i < monsters.size(); i++) {
-            Monster m = monsters.get(i);
+        for (Monster m : monsters) {
             Action[] actions = m.giveActionsToDo(1);
 
             Position currentMonsterPos = new Position(m.getCurrentPosition().y, m.getCurrentPosition().x);
@@ -162,7 +161,7 @@ public class BoardState {
         return isFoodAt(p.x, p.y);
     }
 
-    public boolean isFoodAt(int x, int y) {
+    private boolean isFoodAt(int x, int y) {
         int pos = x + colAmount * y;
         return (boardData[pos] & 16) > 0;
     }
@@ -203,7 +202,7 @@ public class BoardState {
     public short closestFood(Position pos) {
         short distance = 0;
         List<Position> options = getValidNeighborCells(pos);
-        HashSet<Position> expanded = new HashSet<Position>();
+        HashSet<Position> expanded = new HashSet<>();
 
         while (!options.isEmpty()) {
             distance++;
@@ -270,15 +269,14 @@ public class BoardState {
 
         //Consider the pacmanpos
         int pacmanIndex = pacman.currentPosition.y * colAmount + pacman.currentPosition.x;
-        b.append(pacmanIndex + "_");
+        b.append(pacmanIndex).append("_");
 
         //Consider the monsters
-        for (int m = 0; m < monsters.size(); m++) {
+        for (Monster monster : monsters) {
             StringBuilder mons = new StringBuilder();
-            Monster monster = monsters.get(m);
             int monsterPos = monster.currentPosition.y * colAmount + monster.currentPosition.x;
-            mons.append(monsterPos + "*");
-            mons.append(monster.item + "*" + monster.seqUp + "#");
+            mons.append(monsterPos).append("*");
+            mons.append(monster.item).append("*").append(monster.seqUp).append("#");
             b.append(mons.toString());
         }
 
@@ -322,7 +320,7 @@ public class BoardState {
                 GameCycle.getInstance().finish();
             score -= 500;
             isPacmanDead = true;
-            System.err.println("Game.Pacman is dead!");
+            System.err.println("Pacman is dead!");
             return;
         }
 
@@ -348,7 +346,7 @@ public class BoardState {
             if (!config.isTraining())
                 GameCycle.getInstance().finish();
             System.err.println(remainingDotAmount);
-            System.err.println("Game.Pacman won the game!");
+            System.err.println("Pacman won the game!");
         }
     }
 }

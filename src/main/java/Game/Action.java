@@ -32,7 +32,7 @@ public enum Action {
     }
 
 
-    private Action(int code) {
+    Action(int code) {
     	this.code = (short)code;
     }
 

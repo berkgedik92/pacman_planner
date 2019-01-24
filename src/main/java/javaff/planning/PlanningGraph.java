@@ -461,7 +461,7 @@ public class PlanningGraph
 		Iterator p1it = a1.deletes.iterator();
 		while (p1it.hasNext())
 		{
-			PGProposition p1 = (PGProposition) p1it.next();;
+			PGProposition p1 = (PGProposition) p1it.next();
 			if (a2.achieves.contains(p1)) return true;
 			if (a2.conditions.contains(p1)) return true;
 		}

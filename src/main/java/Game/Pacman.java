@@ -25,7 +25,7 @@ public class Pacman extends GameCreature {
             chosenAction = config.isOnlinePlanning() ? onlinePlanner.getNextAction(state) : chooseNextAction(state);
         
         if (!state.checkActionValidity(currentPosition, chosenAction))
-            throw new Exception("Game.Pacman planner tries to make invalid move!");
+            throw new Exception("Pacman planner tries to make invalid move!");
 
         oldPosition.y = currentPosition.y;
         oldPosition.x = currentPosition.x;
@@ -50,12 +50,11 @@ public class Pacman extends GameCreature {
             config.setPlanner(config.getPlanner().reset());
             List<Action> actions = config.getPlanner().makePlan(state);
             if (actions.size() == 0) {
-                System.err.println("Cannot make a plan! Game.Pacman will stop all time");
+                System.err.println("Cannot make a plan! Pacman will stop all time");
                 planFailed = true;
                 return Action.STOP;
             }
-            for (int i = 0; i < actions.size(); i++)
-                plannedActions.add(actions.get(i));
+            plannedActions.addAll(actions);
         }
 
         return plannedActions.poll();

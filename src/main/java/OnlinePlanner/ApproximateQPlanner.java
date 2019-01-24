@@ -37,7 +37,7 @@ public class ApproximateQPlanner {
 		}
 	}
 
-	public double computeQValue(double[] features) {
+	private double computeQValue(double[] features) {
 		double result = 0.0;
 		for (int i = 0; i < weights.length; i++) {
 			result += weights[i] * features[i];
@@ -76,7 +76,7 @@ public class ApproximateQPlanner {
 		return new Random().nextDouble() < testEpsilon ? getRandomAction(b) : getPolicyAction(b);
 	}
 
-	public void updateWeights(BoardState old, Action act, BoardState next) {
+	private void updateWeights(BoardState old, Action act, BoardState next) {
 		// System.err.println("WEIGHTS " + Arrays.toString(weights));
 		double[] features = FeatureExtractor.getFeatures(old, act);
 		// System.err.println("FEATURES " + Arrays.toString(features));

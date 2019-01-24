@@ -25,7 +25,7 @@ public class Monster extends GameCreature {
 
     // OLD: Creates a new instance of monster and makes the first move in queue (needed for A*)
     // NEW: Just a copy constructor. if you need to make a move, just call makeDecision function
-    public Monster(Monster old) throws Exception {
+    public Monster(Monster old) {
         this.currentPosition = new Position(old.currentPosition.y, old.currentPosition.x);
         this.oldPosition = new Position(old.oldPosition.y, old.oldPosition.x);
         this.policy = old.policy;
@@ -39,7 +39,7 @@ public class Monster extends GameCreature {
         Action decidedAction = (config.isMonstersDeterministic()) ? makeDeterministicDecision() : makeRandomDecision(boardData);
 
         if (!Board.getState().checkActionValidity(currentPosition, decidedAction))
-            throw new Exception("Game.Monster planner tries to make invalid move!");
+            throw new Exception("Monster object tries to make invalid move!");
 
         oldPosition.y = currentPosition.y;
         oldPosition.x = currentPosition.x;
@@ -78,7 +78,7 @@ public class Monster extends GameCreature {
     }
 
     /*We assume here that policy array is not null*/
-    protected Action makeDeterministicDecision() {
+    private Action makeDeterministicDecision() {
 
         /*Decide should we change or direction (go left-to-right or right-to-left in the "policy")*/
         if (seqUp && item == policy.length) {
@@ -96,7 +96,7 @@ public class Monster extends GameCreature {
             return Action.opposite(policy[item--]);
     }
 
-    protected Action makeRandomDecision(short[] boardData) {
+    private Action makeRandomDecision(short[] boardData) {
         BoardState state = Board.getState();
         int pos = currentPosition.x + state.colAmount * currentPosition.y;
 

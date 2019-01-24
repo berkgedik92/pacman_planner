@@ -1,18 +1,15 @@
 package AStarPlanner;
 
 import Game.*;
-import Game.Action;
 import IPlanner.IPlanner;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 
-/**
- * Created by USER on 10/7/2016.
- */
 public class AStarPlanner implements IPlanner {
 
+	//TODO: Fix that according to Java8 standarts
 	private static final Comparator<Node> comparator = new Comparator<Node>() {
 		@Override
 		public int compare(Node arg0, Node arg1) {
@@ -105,7 +102,7 @@ public class AStarPlanner implements IPlanner {
 		return null;//if no plan is found
 	}
 
-	public class Node {
+	class Node {
 		Node parent;
 		Position p;
 		int f = 0, g = 0, h = 0;//f for full heuristic, g keeps track of length of plan, 
@@ -113,7 +110,7 @@ public class AStarPlanner implements IPlanner {
 		Action act;
 		BoardState board;
 
-		public Node(Position pos, Node p, Action a, BoardState b) {
+		Node(Position pos, Node p, Action a, BoardState b) {
 			this.p = new Position(pos);
 			this.parent = p;
 			this.act = a;
@@ -121,7 +118,7 @@ public class AStarPlanner implements IPlanner {
 			this.board = b;
 		}
 
-		public int getf() {
+		int getf() {
 			if (this.parent != null)
 				this.g = this.parent.g + 1;
 			else
@@ -130,15 +127,11 @@ public class AStarPlanner implements IPlanner {
 			return this.h;
 		}
 
-		public int getH() {
+		int getH() {
 			return this.h;
 		}
 
-		public Node getParent() {
-			return parent;
-		}
-
-		public Action getAction() {
+		Action getAction() {
 			return act;
 		}
 

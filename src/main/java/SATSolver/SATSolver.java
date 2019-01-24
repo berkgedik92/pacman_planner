@@ -2,10 +2,7 @@ package SATSolver;
 
 import java.util.*;
 
-/**
- * Created by USER on 10/6/2016.
- */
-public class SATSolver {
+class SATSolver {
 
     //unit clauses will be kept here
     private Set<Integer> result = new HashSet<>();
@@ -19,9 +16,9 @@ public class SATSolver {
     private int atomNum;
 
     private List<SATClause> unitClauses = new ArrayList<>();
-    List<SATClause> currentClauses = new ArrayList<>(); //all clauses
+    private List<SATClause> currentClauses = new ArrayList<>(); //all clauses
 
-    public SATSolver(List<SATClause> clauses, int atomNum) {
+    SATSolver(List<SATClause> clauses, int atomNum) {
         this.atomNum = atomNum;
 
         for (int i = atomNum * -1; i < atomNum + 1; i++) {
@@ -29,8 +26,7 @@ public class SATSolver {
             twos.put(i, 0);
         }
 
-        for (int i = 0; i < clauses.size(); i++) {
-            SATClause current = clauses.get(i);
+        for (SATClause current : clauses) {
             if (current.getLength() == 1)
                 this.unitClauses.add(current);
             else if (current.getLength() == 2) {
@@ -49,11 +45,10 @@ public class SATSolver {
         }
     }
 
-    public SATSolver(SATSolver source) {
+    private SATSolver(SATSolver source) {
         this.atomNum = source.atomNum;
 
-        for (Integer i : source.result)
-            this.result.add(i);
+        this.result.addAll(source.result);
 
         for (int i = 0; i < source.currentClauses.size(); i++)
             this.currentClauses.add(new SATClause(source.currentClauses.get(i)));
@@ -63,8 +58,7 @@ public class SATSolver {
             twos.put(i, 0);
         }
 
-        for (int i = 0; i < currentClauses.size(); i++) {
-            SATClause current = currentClauses.get(i);
+        for (SATClause current: currentClauses) {
             if (current.getLength() == 1)
                 this.unitClauses.add(current);
             else if (current.getLength() == 2) {
@@ -81,7 +75,7 @@ public class SATSolver {
         }
     }
 
-    public boolean isFinished() {
+    private boolean isFinished() {
         for (int i = atomNum * -1; i < atomNum + 1; i++)
             if (atomToClause.get(i).size() > 0)
                 return false;
@@ -89,7 +83,7 @@ public class SATSolver {
         return true;
     }
 
-    public int heuristic2() {
+    private int heuristic2() {
         int bestCandidate = 1;
         int bestLength = atomToClause.get(1).size() + atomToClause.get(-1).size()
                 + 3 * (twos.get(1) + twos.get(-1));
@@ -125,9 +119,9 @@ public class SATSolver {
         return bestCandidate;
     }
 
-    SATClause clauseToWork;
+    private SATClause clauseToWork;
 
-    public boolean UnitPropagate() {
+    private boolean UnitPropagate() {
         while (unitClauses.size() > 0) {
             SATClause c = unitClauses.get(0);
             int curAtom = c.atoms[0];
@@ -141,11 +135,11 @@ public class SATSolver {
                     int[] atoms = clause.atoms;
                     boolean isTwo = atoms.length == 2;
 
-                    for (int i = 0; i < atoms.length; i++)
-                        if (atoms[i] != curAtom) {
-                            atomToClause.get(atoms[i]).remove(clause);
+                    for (int atom : atoms)
+                        if (atom != curAtom) {
+                            atomToClause.get(atom).remove(clause);
                             if (isTwo)
-                                twos.put(atoms[i], twos.get(atoms[i]) - 1);
+                                twos.put(atom, twos.get(atom) - 1);
                         }
                 }
             }catch (Exception e) {
@@ -185,8 +179,7 @@ public class SATSolver {
         return true;
     }
 
-
-    public Set<Integer> DPLL() {
+    Set<Integer> DPLL() {
 
         try {
             if (!UnitPropagate())

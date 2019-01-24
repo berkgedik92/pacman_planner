@@ -1,18 +1,25 @@
 package SATSolver;
 
-public class SATClause {
+class SATClause {
 
-    public int[] atoms;
+    int[] atoms;
 
-    public SATClause(int[] atoms) {
+    SATClause(int[] atoms) {
         this.atoms = atoms;
     }
 
-    public int getLength() {
+    SATClause(SATClause source) {
+        atoms = new int[source.atoms.length];
+
+        if (source.atoms.length >= 0)
+            System.arraycopy(source.atoms, 0, atoms, 0, source.atoms.length);
+    }
+
+    int getLength() {
         return this.atoms.length;
     }
 
-    public void RemoveAtom(int atom) {
+    void RemoveAtom(int atom) {
 
         if (atoms.length == 1)
         {
@@ -23,17 +30,10 @@ public class SATClause {
         int[] res = new int[atoms.length - 1];
         int pos = 0;
 
-        for (int i = 0; i < atoms.length; i++)
-            if (atoms[i] != atom)
-                res[pos++] = atoms[i];
+        for (int current: this.atoms)
+            if (current != atom)
+                res[pos++] = current;
 
         atoms = res;
-    }
-
-    public SATClause(SATClause source) {
-        atoms = new int[source.atoms.length];
-
-        for (int i = 0; i < source.atoms.length; i++)
-            atoms[i] = source.atoms[i];
     }
 }

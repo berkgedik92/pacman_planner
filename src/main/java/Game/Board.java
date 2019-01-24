@@ -36,11 +36,11 @@ public class Board extends JPanel {
     private Image pacmanImage;
 
     /*Necessary objects for turn-based game*/
-    public final GameCycle cycle = GameCycle.getInstance();
-    public final Object lock = new Object();
+    private final GameCycle cycle = GameCycle.getInstance();
+    private final Object lock = new Object();
 
-    public Action selectedAction = null;
-    public BoardState state = null;
+    private Action selectedAction = null;
+    public BoardState state;
     private static Board instance = null;
 
     public static Board getInstance() {
@@ -57,7 +57,7 @@ public class Board extends JPanel {
 
     private Board(short[] boardData, int rowAmount, int colAmount, List<Position> initialPos) {
 
-        //Load Game.images
+        //Load Images
         ghostImage = new ImageIcon(getClass().getClassLoader().getResource("ghost.png")).getImage();
         pacmanImage = new ImageIcon(getClass().getClassLoader().getResource("pacman.png")).getImage();
 
@@ -146,7 +146,6 @@ public class Board extends JPanel {
 
     private void doDrawing(Graphics g) {
 
-        Config config = Config.getInstance();
         Graphics2D g2d = (Graphics2D) g;
 
         g2d.setColor(cellColor);
@@ -180,8 +179,6 @@ public class Board extends JPanel {
         synchronized (lock) {
             selectedAction = null;
         }
-
-        Config config = Config.getInstance();
 
         if (state.checkActionValidity(agent.getCurrentPosition(), decidedAction))
             return decidedAction;

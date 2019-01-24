@@ -386,11 +386,11 @@ public class RelaxedMetricPlanningGraph extends RelaxedPlanningGraph
 
 	protected interface PGFunction
 	{
-		public BigDecimal getMaxValue(int layer, List maxes, List mins);
-		public BigDecimal getMinValue(int layer, List maxes, List mins);
-		public boolean effectedBy(PGResourceOperator ro);
-		public boolean increase(PGResourceOperator ro);
-		public boolean decrease(PGResourceOperator ro);
+		BigDecimal getMaxValue(int layer, List maxes, List mins);
+		BigDecimal getMinValue(int layer, List maxes, List mins);
+		boolean effectedBy(PGResourceOperator ro);
+		boolean increase(PGResourceOperator ro);
+		boolean decrease(PGResourceOperator ro);
 	}
 
 	protected class PGNamedFunction implements PGFunction
@@ -440,8 +440,6 @@ public class RelaxedMetricPlanningGraph extends RelaxedPlanningGraph
 		}
 	}
 
-	
-	
 	protected class PGNumberFunction implements PGFunction
 	{
 		public BigDecimal value;
