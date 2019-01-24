@@ -1,4 +1,5 @@
 maze_file: "/home/dmytro/pacman_planner/example_mazes/maze.m"
+block_size: 24
 ai_enabled: true
 online_planning: true
 deterministic_monsters: false

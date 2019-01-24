@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.List;
 
 public class BoardState {
+
     //How many monsters we have in total
     public int monsterAmount;
 
@@ -27,6 +28,7 @@ public class BoardState {
     /*GameCreatures*/
     public Pacman pacman;
     public List<Monster> monsters = new ArrayList<>();
+    private List<IBoardStateObserver> observers = new ArrayList<>();
 
     public BoardState(int colAmount, int rowAmount, short[] boardData, List<Position> initialPos) {
         this.boardData = boardData;
@@ -49,6 +51,35 @@ public class BoardState {
             monsters.add(new Monster(initialPos.get(i + 1)));
     }
 
+    public void initSignalToObservers() {
+        for (IBoardStateObserver observer : observers)
+            observer.initialize(rowAmount, colAmount);
+    }
+
+    public void pushToObservers() {
+        Position pacmanPosition = new Position(pacman.currentPosition.y, pacman.currentPosition.x);
+        List<Position> monsterPositions = new ArrayList<>();
+        for (Monster m : monsters)
+            monsterPositions.add(new Position(m.getCurrentPosition().y, m.getCurrentPosition().x));
+        for (IBoardStateObserver observer : observers)
+            observer.stateUpdateSignal(pacmanPosition, monsterPositions, boardData);
+    }
+
+    public void pushFinishSignal() {
+        for (IBoardStateObserver observer : observers)
+            observer.finishSignal();
+    }
+
+    public void attachObserver(IBoardStateObserver observer) {
+        this.observers.add(observer);
+        Position pacmanPosition = new Position(pacman.currentPosition.y, pacman.currentPosition.x);
+        List<Position> monsterPositions = new ArrayList<>();
+        for (Monster m : monsters)
+            monsterPositions.add(new Position(m.getCurrentPosition().y, m.getCurrentPosition().x));
+        observer.initialize(rowAmount, colAmount);
+        observer.stateUpdateSignal(pacmanPosition, monsterPositions, boardData);
+    }
+
     public void setMonsterMoves(List<Action[]> monsterActions) {
         for (int i = 0; i < monsterAmount; i++)
             monsters.get(i).setPolicy(monsterActions.get(i));
@@ -59,7 +90,7 @@ public class BoardState {
         this.colAmount = state.colAmount;
         this.rowAmount = state.rowAmount;
         this.remainingDotAmount = state.remainingDotAmount;
-        Position curPacmanPos = state.pacman.currentPosition;
+        Position curPacmanPos = state.pacman.getCurrentPosition();
         this.pacman = new Pacman(curPacmanPos);
         this.isPacmanDead = state.isPacmanDead;
         this.score = state.score;
@@ -75,17 +106,17 @@ public class BoardState {
         if (action != null) {
             ActionConsequence cons = checkResult(action);
 
-            pacman.currentPosition = Position.giveConsequence(curPacmanPos, action);
-            pacman.oldPosition = curPacmanPos;
+            pacman.setCurrentPosition(Position.giveConsequence(curPacmanPos, action));
+            pacman.setOldPosition(curPacmanPos);
 
-            System.err.println("OLD: " + pacman.oldPosition + " NEW: " + pacman.currentPosition);
+            System.err.println("OLD: " + pacman.getOldPosition() + " NEW: " + pacman.getCurrentPosition());
 
             //Check if collision happened
             if (cons == ActionConsequence.MONSTER)
                 this.isPacmanDead = true;
 
             /*Check if pacman collected something*/
-            int pos = pacman.currentPosition.x + colAmount * pacman.currentPosition.y;
+            int pos = pacman.getCurrentPosition().x + colAmount * pacman.getCurrentPosition().y;
             int ch = boardData[pos];
 
             if ((ch & 16) != 0) {
@@ -95,7 +126,7 @@ public class BoardState {
 
             for (Monster m : this.monsters) {
                 try {
-                    m.makeDecision(this.boardData);
+                    m.makeDecision(this);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -112,7 +143,7 @@ public class BoardState {
     }
 
     public ActionConsequence checkResult(Action action) {
-        Position pacmanPos = pacman.currentPosition;
+        Position pacmanPos = pacman.getCurrentPosition();
         /*Check if there is a wall*/
         int pos = pacmanPos.x + colAmount * pacmanPos.y;
 
@@ -143,7 +174,7 @@ public class BoardState {
         for (Monster m : monsters) {
             Action[] actions = m.giveActionsToDo(1);
 
-            Position currentMonsterPos = new Position(m.currentPosition.y, m.currentPosition.x);
+            Position currentMonsterPos = new Position(m.getCurrentPosition().y, m.getCurrentPosition().x);
             Position nextMonsterPos = Position.giveConsequence(currentMonsterPos, actions[0]);
 
             //Two cases: 1) MonsterPosNextTime = PacmanPosNextTime
@@ -239,7 +270,7 @@ public class BoardState {
         short minDistance = Short.MAX_VALUE, dist;
 
         for (Monster m : monsters) {
-            dist = (short)pos.manhattanDistance(m.currentPosition);
+            dist = (short)pos.manhattanDistance(m.getCurrentPosition());
             if (dist < minDistance)
                 minDistance = dist;
         }
@@ -289,16 +320,16 @@ public class BoardState {
 
         boolean collision = false;
 
-        int pacmanCurX = pacman.currentPosition.x;
-        int pacmanCurY = pacman.currentPosition.y;
-        int pacmanOldX = pacman.oldPosition.x;
-        int pacmanOldY = pacman.oldPosition.y;
+        int pacmanCurX = pacman.getCurrentPosition().x;
+        int pacmanCurY = pacman.getCurrentPosition().y;
+        int pacmanOldX = pacman.getOldPosition().x;
+        int pacmanOldY = pacman.getOldPosition().y;
 
         for (int i = 0; i < monsterAmount; i++) {
-            int monsterCurX = monsters.get(i).currentPosition.x;
-            int monsterCurY = monsters.get(i).currentPosition.y;
-            int monsterOldX = monsters.get(i).oldPosition.x;
-            int monsterOldY = monsters.get(i).oldPosition.y;
+            int monsterCurX = monsters.get(i).getCurrentPosition().x;
+            int monsterCurY = monsters.get(i).getCurrentPosition().y;
+            int monsterOldX = monsters.get(i).getOldPosition().x;
+            int monsterOldY = monsters.get(i).getOldPosition().y;
 
             if (pacmanCurX == monsterCurX && pacmanCurY == monsterCurY) {
                 collision = true;
@@ -315,15 +346,15 @@ public class BoardState {
 
         if (collision) {
             if (pacman.getPlanner().isTrained())
-                GameCycle.getInstance().finish();
+                pushFinishSignal();
             score -= 500;
             isPacmanDead = true;
-//            System.err.println("Pacman is dead!");
+            System.err.println("Pacman is dead!");
             return;
         }
 
         /*Check if pacman collected something*/
-        int pos = pacman.currentPosition.x + colAmount * pacman.currentPosition.y;
+        int pos = pacman.getCurrentPosition().x + colAmount * pacman.getCurrentPosition().y;
 
         int ch = boardData[pos];
 
@@ -342,9 +373,9 @@ public class BoardState {
 
         if (finished) {
             if (pacman.getPlanner().isTrained())
-                GameCycle.getInstance().finish();
-//            System.err.println(remainingDotAmount);
-//            System.err.println("Pacman won the game!");
+                pushFinishSignal();
+            System.err.println(remainingDotAmount);
+            System.err.println("Pacman won the game!");
         }
     }
 }

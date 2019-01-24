@@ -1,10 +1,9 @@
 package Game;
 
+import lombok.Getter;
+
 import java.lang.Math;
 
-/**
- * Created by USER on 9/30/2016.
- */
 public class Position {
 
     public int x; //left to right

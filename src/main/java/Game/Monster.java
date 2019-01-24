@@ -33,12 +33,12 @@ public class Monster extends GameCreature {
         this.seqUp = old.seqUp;
     }
 
-    public void makeDecision(short[] boardData) throws Exception {
+    public void makeDecision(BoardState state) throws Exception {
 
         Config config = Config.getInstance();
-        Action decidedAction = ((boolean) config.getConfig("deterministic_monsters")) ? makeDeterministicDecision() : makeRandomDecision(boardData);
+        Action decidedAction = ((boolean) config.getConfig("deterministic_monsters")) ? makeDeterministicDecision() : makeRandomDecision(state);
 
-        if (!Board.getState().checkActionValidity(currentPosition, decidedAction))
+        if (!state.checkActionValidity(currentPosition, decidedAction))
             throw new Exception("Monster object tries to make invalid move!");
 
         oldPosition.y = currentPosition.y;
@@ -96,8 +96,7 @@ public class Monster extends GameCreature {
             return Action.opposite(policy[item--]);
     }
 
-    private Action makeRandomDecision(short[] boardData) {
-        BoardState state = Board.getState();
+    private Action makeRandomDecision(BoardState state) {
         int pos = currentPosition.x + state.colAmount * currentPosition.y;
 
         List<Action> possibleActions = new ArrayList<>();
@@ -106,19 +105,19 @@ public class Monster extends GameCreature {
         //possibleActions.add(Game.Action.STOP);
 
         //if there is no left wall on the cell and monster is not in the leftmost column
-        if ((boardData[pos] & 1) == 0 && (pos % state.colAmount > 0))
+        if ((state.boardData[pos] & 1) == 0 && (pos % state.colAmount > 0))
             possibleActions.add(Action.LEFT);
 
         //if there is no right wall on the cell and monster is not in the rightmost column
-        if ((boardData[pos] & 4) == 0 && (pos % state.colAmount) < (state.colAmount - 1))
+        if ((state.boardData[pos] & 4) == 0 && (pos % state.colAmount) < (state.colAmount - 1))
             possibleActions.add(Action.RIGHT);
 
         //if there is no bottom wall on the cell and monster is not in the bottom row
-        if ((boardData[pos] & 8) == 0 && (pos / state.colAmount) < (state.rowAmount - 1))
+        if ((state.boardData[pos] & 8) == 0 && (pos / state.colAmount) < (state.rowAmount - 1))
             possibleActions.add(Action.DOWN);
 
         //if there is no top wall on the cell and monster is not in the top column
-        if ((boardData[pos] & 2) == 0 && (pos / state.colAmount) > 0)
+        if ((state.boardData[pos] & 2) == 0 && (pos / state.colAmount) > 0)
             possibleActions.add(Action.UP);
 
         //Select an action among possible actions

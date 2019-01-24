@@ -10,11 +10,53 @@ import Game.*;
 import OnlinePlanner.ApproximateQPlanner;
 import org.apache.commons.cli.*;
 
-public class Game extends JFrame {
+public class Game extends JFrame implements Runnable, IBoardStateObserver {
+
+    private boolean isFinished = false;
+    private Thread thread;
+
+    @Override
+    public void initialize(int rowAmount, int colAmount) {}
+
+    @Override
+    public void stateUpdateSignal(Position pacmanPosition, List<Position> monsterPositions, short[] boardData) { }
+
+    @Override
+    public void finishSignal() {
+        isFinished = true;
+    }
+
+    /*How much milliseconds should we wait at least before painting the next frame
+        (I'm saying at least because if creatures decide their action late, we will wait for them
+        so waiting time might be longer*/
+    private static final int frameDelay = 400;
+    private BoardState state;
+
+    @Override
+    public void run() {
+        while (!isFinished) {
+            try {
+                //Make pacman make a decision
+                Config config = Config.getInstance();
+                state.pacman.makeDecision((boolean)config.getConfig("ai_enabled") ? null : Board.getInstance().moveAgentByKeyboard(state), state);
+
+                //Make all monsters make a decision
+                for (int i = 0; i < state.monsterAmount; i++)
+                    state.monsters.get(i).makeDecision(state);
+
+                //Check the maze after to see what happened after all actions (collision, death, dot collection etc)
+                state.checkMaze();
+                state.pushToObservers();
+                Thread.sleep(frameDelay);
+            } catch (Exception e) {
+                System.err.println(e.toString());
+                isFinished = true;
+            }
+        }
+    }
 
     private Game() {
 
-//        Config config = Config.getInstance();
         Config config = Config.getInstance();
         List<String> lines;
 
@@ -50,7 +92,8 @@ public class Game extends JFrame {
                 boardData[i * colAmount + y] = Short.parseShort(cellData[y]);
         }
 
-        Board.setInstance(boardData, rowAmount, colAmount, initialPositions);
+        state = new BoardState(colAmount, rowAmount, boardData, initialPositions);
+        state.attachObserver(Board.getInstance());
 
         //Get monster actions (if there is any and if we run in deterministic mode)
         if ((boolean) config.getConfig("deterministic_monsters")) {//config.isMonstersDeterministic()) {
@@ -62,13 +105,13 @@ public class Game extends JFrame {
                     actions[j] = Action.getByCode(Short.parseShort(moves[j]));
                 monsterActions.add(actions);
             }
-            Board.getInstance().setMonsterMoves(monsterActions);
+            state.setMonsterMoves(monsterActions);
         }
 
         if ((boolean) config.getConfig("online_planning")) {//config.isOnlinePlanning()) {
             try {
-                ApproximateQPlanner planner = (ApproximateQPlanner)Board.getState().pacman.getPlanner();
-                planner.train(Board.getState());
+                ApproximateQPlanner planner = (ApproximateQPlanner)state.pacman.getPlanner();
+                planner.train(state);
             }
             catch (Exception e) {
                 throw new RuntimeException("Exception on OnlinePlanner : " + e.toString());
@@ -80,11 +123,13 @@ public class Game extends JFrame {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
 
         //it was 380 * 420 for 15*15 board and 24px blockSize
-        setSize(Board.blockSize * colAmount + 20, Board.blockSize * rowAmount + 60);
+        int blockSize = (int)config.getConfig("block_size");
+        setSize(blockSize * colAmount + 20, blockSize * rowAmount + 60);
         setLocationRelativeTo(null);
         setVisible(true);
 
-        Board.getInstance().startCycle();
+        thread = new Thread(this, "Game Cycle Thread");
+        thread.start();
     }
 
     public static CommandLine parseArgs(String[] args) throws ParseException {
