@@ -1,6 +1,7 @@
 package Game;
 
 import Main.Config;
+import Main.YamlConfig;
 import lombok.Getter;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,8 +36,8 @@ public class Monster extends GameCreature {
 
     public void makeDecision(short[] boardData) throws Exception {
 
-        Config config = Config.getInstance();
-        Action decidedAction = (config.isMonstersDeterministic()) ? makeDeterministicDecision() : makeRandomDecision(boardData);
+        YamlConfig config = YamlConfig.getInstance();
+        Action decidedAction = ((boolean) config.getConfig("deterministic_monsters")) ? makeDeterministicDecision() : makeRandomDecision(boardData);
 
         if (!Board.getState().checkActionValidity(currentPosition, decidedAction))
             throw new Exception("Monster object tries to make invalid move!");

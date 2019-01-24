@@ -1,6 +1,7 @@
 package Game;
 
 import Main.Config;
+import Main.YamlConfig;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -16,6 +17,7 @@ import javax.swing.JPanel;
 
 public class Board extends JPanel {
 
+    private YamlConfig config;
     private Image ii;
 
     /*Colors that we use in the game*/
@@ -66,6 +68,8 @@ public class Board extends JPanel {
 
         this.state = new BoardState(colAmount, rowAmount, boardData, initialPos);
 
+        this.config = YamlConfig.getInstance();
+
         addKeyListener(new TAdapter());
         setFocusable(true);
         setBackground(cellColor);
@@ -83,8 +87,7 @@ public class Board extends JPanel {
 
     private void playGame() throws Exception {
         //Make pacman make a decision
-        Config config = Config.getInstance();
-        state.pacman.makeDecision(config.isAutomatic() ? null : moveAgentByKeyboard(state.pacman));
+        state.pacman.makeDecision((boolean)this.config.getConfig("ai_enabled") ? null : moveAgentByKeyboard(state.pacman));
 
         //Make all monsters make a decision
         for (int i = 0; i < state.monsterAmount; i++)
@@ -152,10 +155,10 @@ public class Board extends JPanel {
         g2d.fillRect(0, 0, this.screenWidth, this.screenHeight);
 
         drawMaze(g2d);
-        g2d.drawImage(pacmanImage, state.pacman.getCurrentPosition().x * blockSize + 1, state.pacman.getCurrentPosition().y * blockSize + 1, this);
+        g2d.drawImage(pacmanImage, state.pacman.currentPosition.x * blockSize + 1, state.pacman.currentPosition.y * blockSize + 1, this);
 
         for (int i = 0; i < state.monsterAmount; i++)
-            g2d.drawImage(ghostImage, state.monsters.get(i).getCurrentPosition().x * blockSize + 1, state.monsters.get(i).getCurrentPosition().y * blockSize + 1, this);
+            g2d.drawImage(ghostImage, state.monsters.get(i).currentPosition.x * blockSize + 1, state.monsters.get(i).currentPosition.y * blockSize + 1, this);
 
         g2d.drawImage(ii, 5, 5, this);
         Toolkit.getDefaultToolkit().sync();
@@ -180,7 +183,7 @@ public class Board extends JPanel {
             selectedAction = null;
         }
 
-        if (state.checkActionValidity(agent.getCurrentPosition(), decidedAction))
+        if (state.checkActionValidity(agent.currentPosition, decidedAction))
             return decidedAction;
 
         return Action.STOP;
@@ -195,10 +198,12 @@ public class Board extends JPanel {
         @Override
         public void keyPressed(KeyEvent e) {
 
-            Config config = Config.getInstance();
+//            Config config = Config.getInstance();
+
+            YamlConfig config = YamlConfig.getInstance();
 
             /*If Pacman is not controlled by keyboard, we should not listen for keys*/
-            if (config.isAutomatic())
+            if ((boolean)config.getConfig("ai_enabled"))//config.isAutomatic())
                 return;
 
             int key = e.getKeyCode();

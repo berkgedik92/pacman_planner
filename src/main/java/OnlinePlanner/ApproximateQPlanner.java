@@ -11,14 +11,20 @@ import java.util.Arrays;
 import java.util.Random;
 import java.util.List;
 import java.util.HashMap;
+
+import IPlanner.IPlanner;
 import Main.Config;
 import Game.Action;
 import Game.BoardState;
 import Game.Monster;
+import Main.YamlConfig;
+import org.yaml.snakeyaml.Yaml;
 
-public class ApproximateQPlanner {
+public class ApproximateQPlanner implements IPlanner {
 
 	private HashMap<Short, Integer> actDistribution;
+
+	private boolean trained = false;
 
 	private boolean useStats = false;
 	private double learningRate = 0.1;
@@ -46,13 +52,13 @@ public class ApproximateQPlanner {
 	}
 
 	private Action getRandomAction(BoardState b) {
-		List<Action> actions = b.getValidActions(b.pacman.getCurrentPosition());
+		List<Action> actions = b.getValidActions(b.pacman.currentPosition);
 		int rndInd = new Random().nextInt(actions.size());
 		return actions.get(rndInd);
 	}
 
 	private Action getPolicyAction(BoardState b) {
-		List<Action> validActions = b.getValidActions(b.pacman.getCurrentPosition());
+		List<Action> validActions = b.getValidActions(b.pacman.currentPosition);
 		Action winner = validActions.get(0);
 		double maxQValue = Integer.MIN_VALUE, qValue;
 		for (Action a : validActions) {
@@ -76,6 +82,16 @@ public class ApproximateQPlanner {
 		return new Random().nextDouble() < testEpsilon ? getRandomAction(b) : getPolicyAction(b);
 	}
 
+	@Override
+	public IPlanner reset() {
+		return this;
+	}
+
+	@Override
+	public boolean isTrained() {
+		return trained;
+	}
+
 	private void updateWeights(BoardState old, Action act, BoardState next) {
 		// System.err.println("WEIGHTS " + Arrays.toString(weights));
 		double[] features = FeatureExtractor.getFeatures(old, act);
@@ -86,7 +102,7 @@ public class ApproximateQPlanner {
 		double qValue = computeQValue(features);
 		// might be substituted with just state policy lookup if we kept this policy
 		double expectedQValue = next.isGameOver() ? 0 : next.getValidActions(
-			next.pacman.getCurrentPosition()).stream().mapToDouble(x -> computeQValue(FeatureExtractor.getFeatures(next, x))).max().getAsDouble();
+			next.pacman.currentPosition).stream().mapToDouble(x -> computeQValue(FeatureExtractor.getFeatures(next, x))).max().getAsDouble();
 		double difference = reward + discount * expectedQValue - qValue;
 
 		// System.err.println("GOT: " + reward + " EXPECT IN FUTURE: " + expectedQValue + " EXPECTED TO GET NOW: " + qValue);
@@ -97,15 +113,16 @@ public class ApproximateQPlanner {
 	}
 
 	public void train(BoardState state) throws Exception {
-		Config config = Config.getInstance();
-		System.err.println("=========== " + config.getTrainingEpisodes() + " TRAINING EPISODES STARTED ==============");
+		YamlConfig config = YamlConfig.getInstance();
+		int trainingEpisodes = (int)config.getConfig("training_episodes");
+		System.err.println("=========== " + trainingEpisodes + " TRAINING EPISODES STARTED ==============");
 		int episode = 0, victories = 0;
-		int[] movesStat = new int[config.getTrainingEpisodes()];
-		while(episode < config.getTrainingEpisodes()) {
+		int[] movesStat = new int[trainingEpisodes];
+		while(episode < trainingEpisodes) {
 			BoardState playBoard = new BoardState(state, null);
 			Random rnd = new Random();
 			int iterationAmount = 0;
-			while (!state.isGameOver()) {
+			while (!playBoard.isGameOver()) {
 				Action decision;
 
 				// here need to try simulated annealing idea
@@ -137,14 +154,18 @@ public class ApproximateQPlanner {
 		System.err.println(victories * 100.0 / episode + "% of victories during training");
 		System.err.println("Average number of moves per episode: " + Arrays.stream(movesStat).average().getAsDouble());
 		System.err.println("\n");
+
+		test(state);
+		trained = true;
 	}
 
-	public void test(BoardState state) throws Exception {
-		Config config = Config.getInstance();
-        System.err.println("=========== " + config.getTestEpisodes() + " TEST GAMES STARTED ==============");
+	private void test(BoardState state) throws Exception {
+		YamlConfig config = YamlConfig.getInstance();
+		int testEpisodes = (int)config.getConfig("test_episodes");
+        System.err.println("=========== " + testEpisodes + " TEST GAMES STARTED ==============");
         int episode = 0, victories = 0;
-        int[] movesStat = new int[config.getTestEpisodes()];
-        while (episode < config.getTestEpisodes()) {
+        int[] movesStat = new int[testEpisodes];
+        while (episode < testEpisodes) {
             BoardState playBoard = new BoardState(state, null);
             Random rnd = new Random();
             int iter = 0;

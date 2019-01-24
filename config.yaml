@@ -1,0 +1,6 @@
+maze_file: "/home/dmytro/pacman_planner/example_mazes/maze.m"
+ai_enabled: true
+online_planning: true
+deterministic_monsters: false
+training_episodes: 50
+test_episodes: 50

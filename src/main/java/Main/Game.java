@@ -7,16 +7,21 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JFrame;
 import Game.*;
+import OnlinePlanner.ApproximateQPlanner;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 
 public class Game extends JFrame {
 
     private Game() {
 
-        Config config = Config.getInstance();
+//        Config config = Config.getInstance();
+        YamlConfig config = YamlConfig.getInstance();
         List<String> lines;
 
         try {
-            lines = Files.readAllLines(Paths.get(config.getMazeFile()));
+//            lines = Files.readAllLines(Paths.get(config.getMazeFile()));
+            System.out.println((String)config.getConfig("maze_file"));
+            lines = Files.readAllLines(Paths.get((String) config.getConfig("maze_file")));
         }
         catch (Exception e) {
             throw new RuntimeException("Could not read the maze file");
@@ -48,7 +53,7 @@ public class Game extends JFrame {
         Board.setInstance(boardData, rowAmount, colAmount, initialPositions);
 
         //Get monster actions (if there is any and if we run in deterministic mode)
-        if (config.isMonstersDeterministic()) {
+        if ((boolean) config.getConfig("deterministic_monsters")) {//config.isMonstersDeterministic()) {
             List<Action[]> monsterActions = new ArrayList<>();
             for (int i = 0; i < monsterAmount; i++) {
                 String[] moves = lines.get(i + rowAmount + 2).split(",");
@@ -60,11 +65,10 @@ public class Game extends JFrame {
             Board.getInstance().setMonsterMoves(monsterActions);
         }
 
-        if (config.isOnlinePlanning()) {
+        if ((boolean) config.getConfig("online_planning")) {//config.isOnlinePlanning()) {
             try {
-                Board.getState().pacman.getOnlinePlanner().train(Board.getState());
-                config.markTrainingFinished();
-                Board.getState().pacman.getOnlinePlanner().test(Board.getState());
+                ApproximateQPlanner planner = (ApproximateQPlanner)Board.getState().pacman.getPlanner();
+                planner.train(Board.getState());
             }
             catch (Exception e) {
                 throw new RuntimeException("Exception on OnlinePlanner : " + e.toString());
@@ -84,8 +88,8 @@ public class Game extends JFrame {
     }
 
     public static void main(String[] args) {
-
-        Config.setByProgramArguments(args);
+//        Config.setByProgramArguments(args);
+        YamlConfig.load("/home/dmytro/pacman_planner/config.yaml");
 
         EventQueue.invokeLater(() -> {
             Game ex = new Game();
