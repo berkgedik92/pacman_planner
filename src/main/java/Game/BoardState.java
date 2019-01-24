@@ -1,6 +1,8 @@
 package Game;
 
-import Config.Config;
+import Main.Config;
+
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -314,8 +316,10 @@ public class BoardState {
             }
         }
 
+        Config config = Config.getInstance();
+
         if (collision) {
-            if (!Config.isTraining)
+            if (!config.isTraining())
                 GameCycle.getInstance().finish();
             score -= 500;
             isPacmanDead = true;
@@ -342,7 +346,7 @@ public class BoardState {
                 finished = false;
 
         if (finished) {
-            if (!Config.isTraining)
+            if (!config.isTraining())
                 GameCycle.getInstance().finish();
             System.err.println(remainingDotAmount);
             System.err.println("Game.Pacman won the game!");

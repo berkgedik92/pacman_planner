@@ -11,7 +11,7 @@ import java.util.Arrays;
 import java.util.Random;
 import java.util.List;
 import java.util.HashMap;
-import Config.Config;
+import Main.Config;
 import Game.Action;
 import Game.BoardState;
 import Game.Monster;
@@ -97,10 +97,11 @@ public class ApproximateQPlanner {
 	}
 
 	public void train(BoardState state) throws Exception {
-		System.err.println("=========== " + Config.trainingEpisodes + " TRAINING EPISODES STARTED ==============");
+		Config config = Config.getInstance();
+		System.err.println("=========== " + config.getTrainingEpisodes() + " TRAINING EPISODES STARTED ==============");
 		int episode = 0, victories = 0;
-		int[] movesStat = new int[Config.trainingEpisodes];
-		while(episode < Config.trainingEpisodes) {
+		int[] movesStat = new int[config.getTrainingEpisodes()];
+		while(episode < config.getTrainingEpisodes()) {
 			BoardState playBoard = new BoardState(state, null);
 			Random rnd = new Random();
 			int iter = 0;
@@ -139,10 +140,11 @@ public class ApproximateQPlanner {
 	}
 
 	public void test(BoardState state) throws Exception {
-        System.err.println("=========== " + Config.testEpisodes + " TEST GAMES STARTED ==============");
+		Config config = Config.getInstance();
+        System.err.println("=========== " + config.getTestEpisodes() + " TEST GAMES STARTED ==============");
         int episode = 0, victories = 0;
-        int[] movesStat = new int[Config.testEpisodes];
-        while (episode < Config.testEpisodes) {
+        int[] movesStat = new int[config.getTestEpisodes()];
+        while (episode < config.getTestEpisodes()) {
             BoardState playBoard = new BoardState(state, null);
             Random rnd = new Random();
             int iter = 0;

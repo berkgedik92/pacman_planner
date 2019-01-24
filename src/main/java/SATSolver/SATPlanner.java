@@ -1,6 +1,6 @@
 package SATSolver;
 
-import Config.Config;
+import Main.Config;
 import Game.*;
 import IPlanner.IPlanner;
 import java.io.File;

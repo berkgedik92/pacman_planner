@@ -1,7 +1,7 @@
 package Game;
 
 import java.util.*;
-import Config.Config;
+import Main.Config;
 import OnlinePlanner.ApproximateQPlanner;
 
 public class Pacman extends GameCreature {

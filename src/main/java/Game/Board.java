@@ -1,6 +1,6 @@
 package Game;
 
-import Config.Config;
+import Main.Config;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
