@@ -104,7 +104,7 @@ public class ApproximateQPlanner {
 		while(episode < config.getTrainingEpisodes()) {
 			BoardState playBoard = new BoardState(state, null);
 			Random rnd = new Random();
-			int iter = 0;
+			int iterationAmount = 0;
 			while (!state.isGameOver()) {
 				Action decision;
 
@@ -121,9 +121,9 @@ public class ApproximateQPlanner {
 				}
 				playBoard.checkMaze();
 				updateWeights(oldBoard, decision, playBoard);
-				iter++;
+				iterationAmount++;
 			}
-			movesStat[episode] = iter;
+			movesStat[episode] = iterationAmount;
 
 			if (!playBoard.isPacmanDead)
 				victories++;
@@ -131,7 +131,7 @@ public class ApproximateQPlanner {
 			episode++;
 
 			if (episode % 10 == 0)
-				System.err.println("TRAINED " + episode + " EPISODES with " + iter + " ITERATIONS\n");
+				System.err.println("TRAINED " + episode + " EPISODES with " + iterationAmount + " ITERATIONS\n");
 		}
 		System.err.println("=========== TRAINING IS FINISHED ==============");
 		System.err.println(victories * 100.0 / episode + "% of victories during training");

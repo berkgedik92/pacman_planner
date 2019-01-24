@@ -10,9 +10,7 @@ class SATClause {
 
     SATClause(SATClause source) {
         atoms = new int[source.atoms.length];
-
-        if (source.atoms.length >= 0)
-            System.arraycopy(source.atoms, 0, atoms, 0, source.atoms.length);
+        System.arraycopy(source.atoms, 0, atoms, 0, source.atoms.length);
     }
 
     int getLength() {

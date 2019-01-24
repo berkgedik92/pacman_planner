@@ -41,26 +41,26 @@ public class SATPlanner implements IPlanner {
     public List<Action> makePlan(BoardState state) {
         int lowerBound = state.remainingDotAmount;
         int upperBound = 2 * state.rowAmount * state.colAmount;
-        Set<Integer> SATsolution = null;
+        Set<Integer> SATSolution = null;
         long startTime = System.currentTimeMillis();
 
-        long totaltime = 0;
+        long totalTime = 0;
 
         while (upperBound  > lowerBound) {
             int candidate = (upperBound + lowerBound) / 2;
             Set<Integer> currentSol = notOptimalSATSolver(state, candidate);
             if (currentSol != null && currentSol.size() > 0) {
                 upperBound = candidate;
-                SATsolution = currentSol;
+                SATSolution = currentSol;
             }
             else
                 lowerBound = candidate + 1;
 
-            if (totaltime >= threshold && SATsolution != null)
+            if (totalTime >= threshold && SATSolution != null)
                 break;
         }
 
-        if (SATsolution == null)
+        if (SATSolution == null)
             return new ArrayList<>();
 
         int timeLimit = upperBound;
@@ -69,7 +69,7 @@ public class SATPlanner implements IPlanner {
 
         boolean[] solBol = new boolean[timeLimit * colAmount * rowAmount];
 
-        for (Integer a : SATsolution) {
+        for (Integer a : SATSolution) {
             int index = Math.abs(a) - 1;
             boolean isTrue = a > 0;
             solBol[index] = isTrue;
@@ -124,7 +124,7 @@ public class SATPlanner implements IPlanner {
     private Set<Integer> notOptimalSATSolver(BoardState state, int timeLimit)
     {
         short[] boardData = state.boardData;
-        Position pacmanPos = state.pacman.getCurrentPosition();
+        Position pacmanPosition = state.pacman.getCurrentPosition();
         List<Monster> monsters = state.monsters;
         int colAmount = state.colAmount;
         int rowAmount = state.rowAmount;
@@ -244,10 +244,10 @@ public class SATPlanner implements IPlanner {
         //Set initial position of pacman
         for (int c = 0; c < colAmount; c++)
             for (int r = 0; r < rowAmount; r++)
-                if (c != pacmanPos.x || r != pacmanPos.y)
+                if (c != pacmanPosition.x || r != pacmanPosition.y)
                     clauses.add(new SATClause(new int[] {variables[0][c][r] * -1}));
 
-        clauses.add(new SATClause(new int[] {variables[0][pacmanPos.x][pacmanPos.y]}));
+        clauses.add(new SATClause(new int[] {variables[0][pacmanPosition.x][pacmanPosition.y]}));
 
         //Each dot must be collected
         for (int index = 0; index < cellAmount; index++) {

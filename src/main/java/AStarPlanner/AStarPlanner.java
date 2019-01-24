@@ -13,8 +13,8 @@ public class AStarPlanner implements IPlanner {
 	private static final Comparator<Node> comparator = new Comparator<Node>() {
 		@Override
 		public int compare(Node arg0, Node arg1) {
-		if(arg0.getf()-arg1.getf()==0)return arg0.getH() - arg1.getH();
-		return arg0.getf()-arg1.getf();
+		if(arg0.getF()-arg1.getF()==0)return arg0.getH() - arg1.getH();
+		return arg0.getF()-arg1.getF();
 		}
 	};
 
@@ -55,10 +55,10 @@ public class AStarPlanner implements IPlanner {
 			open.sort(comparator);//sort list for faster runtime
 			Node q = open.remove(0);
 			Node next;
-			for (int movt = 1; movt < 5; movt++) {
+			for (int move = 1; move < 5; move++) {
 				// check each action
 				Action nextAction = Action.STOP;
-				switch (movt) {
+				switch (move) {
 				case 1:// Left
 					nextAction = Action.LEFT;
 					break;
@@ -105,7 +105,7 @@ public class AStarPlanner implements IPlanner {
 	class Node {
 		Node parent;
 		Position p;
-		int f = 0, g = 0, h = 0;//f for full heuristic, g keeps track of length of plan, 
+		int f = 0, g = 0, h = 0;//f for full heuristic, g keeps track of length of plan,
 								//h is heuristic of either null, remaining food, or remaining food and distance to closest food
 		Action act;
 		BoardState board;
@@ -118,7 +118,7 @@ public class AStarPlanner implements IPlanner {
 			this.board = b;
 		}
 
-		int getf() {
+		int getF() {
 			if (this.parent != null)
 				this.g = this.parent.g + 1;
 			else

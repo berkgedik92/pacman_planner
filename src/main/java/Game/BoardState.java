@@ -267,17 +267,15 @@ public class BoardState {
 
         b.append(new String(bitsForDots));
 
-        //Consider the pacmanpos
         int pacmanIndex = pacman.currentPosition.y * colAmount + pacman.currentPosition.x;
         b.append(pacmanIndex).append("_");
 
         //Consider the monsters
         for (Monster monster : monsters) {
-            StringBuilder mons = new StringBuilder();
             int monsterPos = monster.currentPosition.y * colAmount + monster.currentPosition.x;
-            mons.append(monsterPos).append("*");
-            mons.append(monster.item).append("*").append(monster.seqUp).append("#");
-            b.append(mons.toString());
+            String mons = String.valueOf(monsterPos) + "*" +
+                    monster.item + "*" + monster.seqUp + "#";
+            b.append(mons);
         }
 
         return b.toString();

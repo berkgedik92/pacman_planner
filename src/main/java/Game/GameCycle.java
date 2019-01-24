@@ -20,7 +20,7 @@ public class GameCycle extends Thread{
         isFinished = true;
     }
 
-    /*How much miliseconds should we wait at least before painting the next frame
+    /*How much milliseconds should we wait at least before painting the next frame
     (I'm saying at least because if creatures decide their action late, we will wait for them
     so waiting time might be longer*/
     private static final int frameDelay = 400;
