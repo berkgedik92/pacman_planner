@@ -58,8 +58,8 @@ public class Board extends JPanel {
     private Board(short[] boardData, int rowAmount, int colAmount, List<Position> initialPos) {
 
         //Load Game.images
-        ghostImage = new ImageIcon(getClass().getClassLoader().getResource("Game/images/ghost.png")).getImage();
-        pacmanImage = new ImageIcon(getClass().getClassLoader().getResource("Game/images/pacman.png")).getImage();
+        ghostImage = new ImageIcon(getClass().getClassLoader().getResource("ghost.png")).getImage();
+        pacmanImage = new ImageIcon(getClass().getClassLoader().getResource("pacman.png")).getImage();
 
         this.screenWidth = colAmount * blockSize;
         this.screenHeight = rowAmount * blockSize;
@@ -83,7 +83,8 @@ public class Board extends JPanel {
 
     private void playGame() throws Exception {
         //Make pacman make a decision
-        state.pacman.makeDecision(Config.isAutomatic ? null : moveAgentByKeyboard(state.pacman));
+        Config config = Config.getInstance();
+        state.pacman.makeDecision(config.isAutomatic() ? null : moveAgentByKeyboard(state.pacman));
 
         //Make all monsters make a decision
         for (int i = 0; i < state.monsterAmount; i++)
@@ -145,16 +146,17 @@ public class Board extends JPanel {
 
     private void doDrawing(Graphics g) {
 
+        Config config = Config.getInstance();
         Graphics2D g2d = (Graphics2D) g;
 
         g2d.setColor(cellColor);
         g2d.fillRect(0, 0, this.screenWidth, this.screenHeight);
 
         drawMaze(g2d);
-        g2d.drawImage(pacmanImage, state.pacman.getCurPos().x * blockSize + 1, state.pacman.getCurPos().y * blockSize + 1, this);
+        g2d.drawImage(pacmanImage, state.pacman.getCurrentPosition().x * blockSize + 1, state.pacman.getCurrentPosition().y * blockSize + 1, this);
 
         for (int i = 0; i < state.monsterAmount; i++)
-            g2d.drawImage(ghostImage, state.monsters.get(i).getCurPos().x * blockSize + 1, state.monsters.get(i).getCurPos().y * blockSize + 1, this);
+            g2d.drawImage(ghostImage, state.monsters.get(i).getCurrentPosition().x * blockSize + 1, state.monsters.get(i).getCurrentPosition().y * blockSize + 1, this);
 
         g2d.drawImage(ii, 5, 5, this);
         Toolkit.getDefaultToolkit().sync();
@@ -179,7 +181,9 @@ public class Board extends JPanel {
             selectedAction = null;
         }
 
-        if (state.checkActionValidity(agent.getCurPos(), decidedAction))
+        Config config = Config.getInstance();
+
+        if (state.checkActionValidity(agent.getCurrentPosition(), decidedAction))
             return decidedAction;
 
         return Action.STOP;
@@ -194,8 +198,10 @@ public class Board extends JPanel {
         @Override
         public void keyPressed(KeyEvent e) {
 
+            Config config = Config.getInstance();
+
             /*If Pacman is not controlled by keyboard, we should not listen for keys*/
-            if (Config.isAutomatic)
+            if (config.isAutomatic())
                 return;
 
             int key = e.getKeyCode();

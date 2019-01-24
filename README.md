@@ -6,15 +6,18 @@ Running the Game
 The main class is called Game and can be found in the Game folder under src. If testing a planning algorithm, 
 run the program with the argument: auto. Apart from that, here are the other program arguments:
 
+-a/auto     (Use to activate planner (so the game will be played automatically by the planner))
 -m/mazefile <"Path of maze file that will be used">
 -p/plannner <"The planner (astar/sat/ff/online)")>
--d/deterministic" (Decides whether the monsters are deterministic (can be used only with online planner)");
+-d/deterministic (Decides whether the monsters are deterministic (can be used only with online planner));
+
+Example usage: -m <path> -d -a -p online
 
 Maze definement
 ----------------
 
 The maze that the application will use is defined in the file "maze.m" (in src folder). 
-The first line defines the row (r), column (c), monster (m) amount in the game and whether monsters moves are deterministic (true or false),
+The first line defines the row (r), column (c), monster (m) amount in the game,
 The second line gives the initial position of creatures (pacmanY, pacmanX, monster1Y, monster1X, ...)
 The next r lines define the cells of a row (from top to bottom). Here is the information about meaning of numbers:
 

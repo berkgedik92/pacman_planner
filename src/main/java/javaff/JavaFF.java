@@ -395,7 +395,7 @@ public class JavaFF implements IPlanner
 
         for (int m = 0; m < state.monsters.size(); m++) {
             Monster currentMonster = state.monsters.get(m);
-            Position cPos = new Position(currentMonster.getCurrentPos().y, currentMonster.getCurrentPos().x);
+            Position cPos = new Position(currentMonster.getCurrentPosition().y, currentMonster.getCurrentPosition().x);
             Action[] actions = currentMonster.giveActionsToDo(timeLimit);
 
             for (int t = 0; t < timeLimit; t++) {
@@ -517,7 +517,7 @@ public class JavaFF implements IPlanner
         
         PredicateSymbol atPredicateSymbol = problem.predSymbolMap.get("At");
         Proposition atProposition = new Proposition(atPredicateSymbol);
-        Position initialPacmanPosition = state.pacman.getCurrentPos();
+        Position initialPacmanPosition = state.pacman.getCurrentPosition();
         PDDLObject initialPosition = (PDDLObject) problem.objectMap.get("p_" + initialPacmanPosition.x + "_" + initialPacmanPosition.y);
         atProposition.addParameter(initialPosition);
         problem.initial.add(atProposition);

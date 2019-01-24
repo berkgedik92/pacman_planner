@@ -33,8 +33,10 @@ public class Config {
 
     private IPlanner planner;
 
-    static void setByProgramArguments(String[] args) throws Exception {
+    static void setByProgramArguments(String[] args) {
         Options options = new Options();
+
+        //TODO: Add trainingEpisodes and testEpisodes to program arguments
 
         Option autoOption = new Option("a", "auto", false, "Use this argument to activate planner (so the game will be played automatically by the planner).");
         autoOption.setRequired(false);
@@ -44,7 +46,7 @@ public class Config {
         mazeFileOption.setRequired(true);
         options.addOption(mazeFileOption);
 
-        Option plannerOption = new Option("p", "plannner", true, "The planner (astar/sat/ff/online)");
+        Option plannerOption = new Option("p", "planner", true, "The planner (astar/sat/ff/online)");
         plannerOption.setRequired(false);
         options.addOption(plannerOption);
 
@@ -114,5 +116,15 @@ public class Config {
 
     public void markTrainingFinished() {
         this.isTraining = false;
+    }
+
+    // TODO: Remove this
+    public IPlanner getPlanner() {
+        return planner;
+    }
+
+    // TODO: Remove this
+    public void setPlanner(IPlanner planner) {
+        this.planner = planner;
     }
 }

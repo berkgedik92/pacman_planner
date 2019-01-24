@@ -2,26 +2,25 @@ package Main;
 
 import java.awt.EventQueue;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JFrame;
 import Game.*;
-import AStarPlanner.AStarPlanner;
-import SATSolver.SATPlanner;
-import javaff.JavaFF;
-import org.apache.commons.cli.*;
 
 public class Game extends JFrame {
 
-    public Game() throws Exception {
+    public Game() {
 
         Config config = Config.getInstance();
+        List<String> lines;
 
-        //Load the maze from file
-        Path path = Paths.get(getClass().getClassLoader().getResource(config.getMazeFile()).toURI());
-        List<String> lines = Files.readAllLines(path);
+        try {
+            lines = Files.readAllLines(Paths.get(config.getMazeFile()));
+        }
+        catch (Exception e) {
+            throw new RuntimeException("Could not read the maze file");
+        }
 
         //Get row amount, col amount and monster amount
         String[] firstLine = lines.get(0).split(",");
@@ -62,9 +61,14 @@ public class Game extends JFrame {
         }
 
         if (config.isOnlinePlanning()) {
-            Board.getState().pacman.getOnlinePlanner().train(Board.getState());
-            config.markTrainingFinished();
-            Board.getState().pacman.getOnlinePlanner().test(Board.getState());
+            try {
+                Board.getState().pacman.getOnlinePlanner().train(Board.getState());
+                config.markTrainingFinished();
+                Board.getState().pacman.getOnlinePlanner().test(Board.getState());
+            }
+            catch (Exception e) {
+                throw new RuntimeException("Exception on OnlinePlanner : " + e.toString());
+            }
         }
 
         add(Board.getInstance());
@@ -81,14 +85,11 @@ public class Game extends JFrame {
 
     public static void main(String[] args) {
 
+        Config.setByProgramArguments(args);
+
         EventQueue.invokeLater(() -> {
-            try {
-                Game ex = new Game();
-                ex.setVisible(true);
-            }catch (Exception e) {
-                System.err.println("cannot start the game, exiting");
-                System.exit(-1);
-            }
+            Game ex = new Game();
+            ex.setVisible(true);
         });
     }
 }

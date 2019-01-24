@@ -9,9 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-/**
- * Created by USER on 10/7/2016.
- */
 public class SATPlanner implements IPlanner {
 
     public static boolean testMode = false;
@@ -24,7 +21,8 @@ public class SATPlanner implements IPlanner {
 
     public void writeToFile(int timeLimit, BoardState state, List<SATClause> clauses) {
         try {
-            PrintWriter w = new PrintWriter(new File(Config.mazeFile + ".cnf"));
+            Config config = Config.getInstance();
+            PrintWriter w = new PrintWriter(new File(config.getMazeFile() + ".cnf"));
 
             w.println("p cnf " + timeLimit * state.colAmount * state.rowAmount + " " + clauses.size());
             for (int i = 0; i < clauses.size(); i++) {
@@ -128,7 +126,7 @@ public class SATPlanner implements IPlanner {
     public Set<Integer> notOptimalSATSolver(BoardState state, int timeLimit)
     {
         short[] boardData = state.boardData;
-        Position pacmanPos = state.pacman.getCurrentPos();
+        Position pacmanPos = state.pacman.getCurrentPosition();
         List<Monster> monsters = state.monsters;
         int colAmount = state.colAmount;
         int rowAmount = state.rowAmount;
@@ -271,7 +269,7 @@ public class SATPlanner implements IPlanner {
             //There must be no collisions (I'm not sure if this part is correct, I need to check it later)
             for (int m = 0; m < monsters.size(); m++) {
                 Monster currentMonster = monsters.get(m);
-                Position cPos = new Position(currentMonster.getCurrentPos().y, currentMonster.getCurrentPos().x);
+                Position cPos = new Position(currentMonster.getCurrentPosition().y, currentMonster.getCurrentPosition().x);
                 Action[] actions = currentMonster.giveActionsToDo(timeLimit);
 
                 Position[] allPos = new Position[timeLimit];

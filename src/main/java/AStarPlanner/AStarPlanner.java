@@ -53,7 +53,7 @@ public class AStarPlanner implements IPlanner {
 		//two lists keep track of states traversed and future states to check
 		ArrayList<Node> open = new ArrayList<>();
 		HashSet<String> closed = new HashSet<>();
-		open.add(new Node(wrapper.pacman.getCurrentPos(), null, Action.STOP, wrapper));//add the first state to open
+		open.add(new Node(wrapper.pacman.getCurrentPosition(), null, Action.STOP, wrapper));//add the first state to open
 		while(!open.isEmpty()){
 			open.sort(comparator);//sort list for faster runtime
 			Node q = open.remove(0);
@@ -78,7 +78,7 @@ public class AStarPlanner implements IPlanner {
 
 				if (q.board.checkResult(nextAction) == ActionConsequence.FREE) {//only check heuristic if is a valid move
 					BoardState n = new BoardState(q.board, nextAction);
-					next = new Node(n.pacman.getCurrentPos(), q, nextAction, n);
+					next = new Node(n.pacman.getCurrentPosition(), q, nextAction, n);
 					if (n.remainingDotAmount == 0) {//solution is found
 						return next;
 					} else {

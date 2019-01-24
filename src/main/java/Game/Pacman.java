@@ -12,27 +12,29 @@ public class Pacman extends GameCreature {
     private ApproximateQPlanner onlinePlanner;
 
     public Pacman(Position pos) {
-        this.currentPos = new Position(pos);
-        this.oldPos = new Position(pos.y, pos.x);
+        this.currentPosition = new Position(pos);
+        this.oldPosition = new Position(pos.y, pos.x);
         this.onlinePlanner = new ApproximateQPlanner();
     }
 
     public void makeDecision(Action chosenAction) throws Exception {
         BoardState state = Board.getInstance().state;
+        Config config = Config.getInstance();
+
         if (chosenAction == null)
-            chosenAction = Config.isOnlinePlanning ? onlinePlanner.getNextAction(state) : chooseNextAction(state);
+            chosenAction = config.isOnlinePlanning() ? onlinePlanner.getNextAction(state) : chooseNextAction(state);
         
-        if (!state.checkActionValidity(currentPos, chosenAction))
+        if (!state.checkActionValidity(currentPosition, chosenAction))
             throw new Exception("Game.Pacman planner tries to make invalid move!");
 
-        oldPos.y = currentPos.y;
-        oldPos.x = currentPos.x;
+        oldPosition.y = currentPosition.y;
+        oldPosition.x = currentPosition.x;
 
         switch (chosenAction) {
-            case UP: currentPos.y--; break;
-            case DOWN: currentPos.y++; break;
-            case LEFT: currentPos.x--; break;
-            case RIGHT: currentPos.x++; break;
+            case UP: currentPosition.y--; break;
+            case DOWN: currentPosition.y++; break;
+            case LEFT: currentPosition.x--; break;
+            case RIGHT: currentPosition.x++; break;
             case STOP: break;
         }
     }
@@ -42,9 +44,11 @@ public class Pacman extends GameCreature {
         if (planFailed)
             return Action.STOP;
 
+        Config config = Config.getInstance();
+
         if (plannedActions.size() == 0) {
-            Config.planner = Config.planner.reset();
-            List<Action> actions = Config.planner.makePlan(state);
+            config.setPlanner(config.getPlanner().reset());
+            List<Action> actions = config.getPlanner().makePlan(state);
             if (actions.size() == 0) {
                 System.err.println("Cannot make a plan! Game.Pacman will stop all time");
                 planFailed = true;

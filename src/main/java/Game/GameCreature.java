@@ -1,10 +1,11 @@
 package Game;
 
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
 @Setter
 public abstract class GameCreature {
-	public Position currentPos;
-    public Position oldPos;
+	public Position currentPosition;
+    public Position oldPosition;
 }

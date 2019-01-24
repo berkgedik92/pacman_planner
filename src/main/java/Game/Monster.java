@@ -2,13 +2,10 @@ package Game;
 
 import Main.Config;
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-@Slf4j
 @Getter
 public class Monster extends GameCreature {
 
@@ -17,8 +14,8 @@ public class Monster extends GameCreature {
     public boolean seqUp = true;   //if moves are deterministic, next move will be policy[item+1] or policy[item-1]
 
     public Monster(Position pos) {
-        this.currentPos = pos;
-        this.oldPos = new Position(pos.y, pos.x);
+        this.currentPosition = pos;
+        this.oldPosition = new Position(pos.y, pos.x);
     }
 
     public void setPolicy(Action[] actions)
@@ -29,8 +26,8 @@ public class Monster extends GameCreature {
     // OLD: Creates a new instance of monster and makes the first move in queue (needed for A*)
     // NEW: Just a copy constructor. if you need to make a move, just call makeDecision function
     public Monster(Monster old) throws Exception {
-        this.currentPos = new Position(old.currentPos.y, old.currentPos.x);
-        this.oldPos = new Position(old.oldPos.y, old.oldPos.x);
+        this.currentPosition = new Position(old.currentPosition.y, old.currentPosition.x);
+        this.oldPosition = new Position(old.oldPosition.y, old.oldPosition.x);
         this.policy = old.policy;
         this.item = old.item;
         this.seqUp = old.seqUp;
@@ -38,19 +35,20 @@ public class Monster extends GameCreature {
 
     public void makeDecision(short[] boardData) throws Exception {
 
-        Action decidedAction = (Config.areMonstersDeterministic) ? makeDeterministicDecision() : makeRandomDecision(boardData);
+        Config config = Config.getInstance();
+        Action decidedAction = (config.isMonstersDeterministic()) ? makeDeterministicDecision() : makeRandomDecision(boardData);
 
-        if (!Board.getState().checkActionValidity(currentPos, decidedAction))
+        if (!Board.getState().checkActionValidity(currentPosition, decidedAction))
             throw new Exception("Game.Monster planner tries to make invalid move!");
 
-        oldPos.y = currentPos.y;
-        oldPos.x = currentPos.x;
+        oldPosition.y = currentPosition.y;
+        oldPosition.x = currentPosition.x;
 
         switch (decidedAction) {
-            case UP: currentPos.y--; break;
-            case DOWN: currentPos.y++; break;
-            case LEFT: currentPos.x--; break;
-            case RIGHT: currentPos.x++; break;
+            case UP: currentPosition.y--; break;
+            case DOWN: currentPosition.y++; break;
+            case LEFT: currentPosition.x--; break;
+            case RIGHT: currentPosition.x++; break;
             case STOP: break;
         }
     }
@@ -100,7 +98,7 @@ public class Monster extends GameCreature {
 
     protected Action makeRandomDecision(short[] boardData) {
         BoardState state = Board.getState();
-        int pos = currentPos.x + state.colAmount * currentPos.y;
+        int pos = currentPosition.x + state.colAmount * currentPosition.y;
 
         List<Action> possibleActions = new ArrayList<>();
 
