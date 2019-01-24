@@ -115,9 +115,9 @@ public class ApproximateQPlanner {
 					decision = getPolicyAction(playBoard);
 
 				BoardState oldBoard = new BoardState(playBoard, null);
-				playBoard.pacman.makeDecision(decision);
+				playBoard.pacman.makeDecision(decision, playBoard);
 				for (Monster m : playBoard.monsters) {
-					m.makeDecision(playBoard.boardData);
+					m.makeDecision(playBoard);
 				}
 				playBoard.checkMaze();
 				updateWeights(oldBoard, decision, playBoard);
@@ -157,9 +157,9 @@ public class ApproximateQPlanner {
                 else
                     decision = getPolicyAction(playBoard);
 
-                playBoard.pacman.makeDecision(decision);
+                playBoard.pacman.makeDecision(decision, playBoard);
                 for (Monster m : playBoard.monsters)
-                    m.makeDecision(playBoard.boardData);
+                    m.makeDecision(playBoard);
 
                 playBoard.checkMaze();
                 iter++;

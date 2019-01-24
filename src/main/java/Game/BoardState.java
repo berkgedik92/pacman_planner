@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.List;
 
 public class BoardState {
+
     //How many monsters we have in total
     public int monsterAmount;
 
@@ -27,6 +28,7 @@ public class BoardState {
     /*GameCreatures*/
     public Pacman pacman;
     public List<Monster> monsters = new ArrayList<>();
+    private List<IBoardStateObserver> observers = new ArrayList<>();
 
     public BoardState(int colAmount, int rowAmount, short[] boardData, List<Position> initialPos) {
         this.boardData = boardData;
@@ -47,6 +49,35 @@ public class BoardState {
 
         for (int i = 0; i < monsterAmount; i++)
             monsters.add(new Monster(initialPos.get(i + 1)));
+    }
+
+    public void initSignalToObservers() {
+        for (IBoardStateObserver observer : observers)
+            observer.initialize(rowAmount, colAmount);
+    }
+
+    public void pushToObservers() {
+        Position pacmanPosition = new Position(pacman.currentPosition.y, pacman.currentPosition.x);
+        List<Position> monsterPositions = new ArrayList<>();
+        for (Monster m : monsters)
+            monsterPositions.add(new Position(m.getCurrentPosition().y, m.getCurrentPosition().x));
+        for (IBoardStateObserver observer : observers)
+            observer.stateUpdateSignal(pacmanPosition, monsterPositions, boardData);
+    }
+
+    public void pushFinishSignal() {
+        for (IBoardStateObserver observer : observers)
+            observer.finishSignal();
+    }
+
+    public void attachObserver(IBoardStateObserver observer) {
+        this.observers.add(observer);
+        Position pacmanPosition = new Position(pacman.currentPosition.y, pacman.currentPosition.x);
+        List<Position> monsterPositions = new ArrayList<>();
+        for (Monster m : monsters)
+            monsterPositions.add(new Position(m.getCurrentPosition().y, m.getCurrentPosition().x));
+        observer.initialize(rowAmount, colAmount);
+        observer.stateUpdateSignal(pacmanPosition, monsterPositions, boardData);
     }
 
     public void setMonsterMoves(List<Action[]> monsterActions) {
@@ -95,7 +126,7 @@ public class BoardState {
 
             for (Monster m : this.monsters) {
                 try {
-                    m.makeDecision(this.boardData);
+                    m.makeDecision(this);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -315,7 +346,7 @@ public class BoardState {
 
         if (collision) {
             if (!config.isTraining())
-                GameCycle.getInstance().finish();
+                pushFinishSignal();
             score -= 500;
             isPacmanDead = true;
             System.err.println("Pacman is dead!");
@@ -342,7 +373,7 @@ public class BoardState {
 
         if (finished) {
             if (!config.isTraining())
-                GameCycle.getInstance().finish();
+                pushFinishSignal();
             System.err.println(remainingDotAmount);
             System.err.println("Pacman won the game!");
         }

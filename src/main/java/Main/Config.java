@@ -8,6 +8,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.apache.commons.cli.*;
 
+import java.awt.*;
+
 @Getter
 @NoArgsConstructor
 public class Config {
@@ -32,6 +34,16 @@ public class Config {
     private int testEpisodes = 10;
 
     private IPlanner planner;
+
+    /*Colors that we use in the game*/
+    private final Color dotColor    = new Color(192, 192, 0); //Color of dots
+    private final Color mazeColor   = new Color(5, 100, 5);   //Color of borders
+    private final Color cellColor   = new Color(0, 0, 0);     //Color of cells and background
+
+    /*How px a cell should be (width and height), our image file has image with size
+    22*22 and line thickness is 1 so this must be 22 + 1 + 1 = 24 */
+    private final int blockSize = 24;
+
 
     static void setByProgramArguments(String[] args) {
         Options options = new Options();

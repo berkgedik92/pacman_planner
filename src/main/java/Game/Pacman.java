@@ -17,8 +17,7 @@ public class Pacman extends GameCreature {
         this.onlinePlanner = new ApproximateQPlanner();
     }
 
-    public void makeDecision(Action chosenAction) throws Exception {
-        BoardState state = Board.getInstance().state;
+    public void makeDecision(Action chosenAction, BoardState state) throws Exception {
         Config config = Config.getInstance();
 
         if (chosenAction == null)
