@@ -38,7 +38,7 @@ public class Game extends JFrame implements Runnable, IBoardStateObserver {
             try {
                 //Make pacman make a decision
                 Config config = Config.getInstance();
-                state.pacman.makeDecision((boolean)config.getConfig("ai_enabled") ? null : Board.getInstance().moveAgentByKeyboard(state), state);
+                state.pacman.makeDecision(config.getBoolean("ai_enabled") ? null : Board.getInstance().moveAgentByKeyboard(state), state);
 
                 //Make all monsters make a decision
                 for (int i = 0; i < state.monsterAmount; i++)
@@ -62,8 +62,7 @@ public class Game extends JFrame implements Runnable, IBoardStateObserver {
 
         try {
 //            lines = Files.readAllLines(Paths.get(config.getMazeFile()));
-            System.out.println((String)config.getConfig("maze_file"));
-            lines = Files.readAllLines(Paths.get((String) config.getConfig("maze_file")));
+            lines = Files.readAllLines(Paths.get(config.getString("maze_file")));
         }
         catch (Exception e) {
             throw new RuntimeException("Could not read the maze file");
@@ -97,7 +96,7 @@ public class Game extends JFrame implements Runnable, IBoardStateObserver {
         state.attachObserver(this);
 
         //Get monster actions (if there is any and if we run in deterministic mode)
-        if ((boolean) config.getConfig("deterministic_monsters")) {//config.isMonstersDeterministic()) {
+        if (config.getBoolean("deterministic_monsters")) {
             List<Action[]> monsterActions = new ArrayList<>();
             for (int i = 0; i < monsterAmount; i++) {
                 String[] moves = lines.get(i + rowAmount + 2).split(",");
@@ -109,7 +108,7 @@ public class Game extends JFrame implements Runnable, IBoardStateObserver {
             state.setMonsterMoves(monsterActions);
         }
 
-        if ((boolean) config.getConfig("online_planning")) {//config.isOnlinePlanning()) {
+        if (config.getBoolean("online_planning")) {
             try {
                 ApproximateQPlanner planner = (ApproximateQPlanner)state.pacman.getPlanner();
                 planner.train(state);
@@ -124,7 +123,7 @@ public class Game extends JFrame implements Runnable, IBoardStateObserver {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
 
         //it was 380 * 420 for 15*15 board and 24px blockSize
-        int blockSize = (int)config.getConfig("block_size");
+        int blockSize = config.getInt("block_size");
         setSize(blockSize * colAmount + 20, blockSize * rowAmount + 60);
         setLocationRelativeTo(null);
         setVisible(true);

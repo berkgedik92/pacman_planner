@@ -25,8 +25,20 @@ public class Config {
         this.cfg = (Map) yaml.load(inputStream);
     }
 
-    public Object getConfig(String key) {
+    public Object get(String key) {
         return this.cfg.getOrDefault(key, null);
+    }
+
+    public boolean getBoolean(String key) {
+        return (boolean) get(key);
+    }
+
+    public int getInt(String key) {
+        return (int) get(key);
+    }
+
+    public String getString(String key) {
+        return (String) get(key);
     }
 
     public static Config getInstance(){

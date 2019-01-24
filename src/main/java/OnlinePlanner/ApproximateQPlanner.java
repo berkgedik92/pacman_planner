@@ -112,7 +112,7 @@ public class ApproximateQPlanner implements IPlanner {
 
 	public void train(BoardState state) throws Exception {
 		Config config = Config.getInstance();
-		int trainingEpisodes = (int)config.getConfig("training_episodes");
+		int trainingEpisodes = config.getInt("training_episodes");
 		System.err.println("=========== " + trainingEpisodes + " TRAINING EPISODES STARTED ==============");
 		int episode = 0, victories = 0;
 		int[] movesStat = new int[trainingEpisodes];
@@ -159,7 +159,7 @@ public class ApproximateQPlanner implements IPlanner {
 
 	private void test(BoardState state) throws Exception {
 		Config config = Config.getInstance();
-		int testEpisodes = (int)config.getConfig("test_episodes");
+		int testEpisodes = config.getInt("test_episodes");
         System.err.println("=========== " + testEpisodes + " TEST GAMES STARTED ==============");
         int episode = 0, victories = 0;
         int[] movesStat = new int[testEpisodes];

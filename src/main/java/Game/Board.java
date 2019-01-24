@@ -57,7 +57,7 @@ public class Board extends JPanel implements IBoardStateObserver {
     @Override
     public void initialize(int rowAmount, int colAmount) {
         Config config = Config.getInstance();
-        int blockSize = (int)config.getConfig("block_size");
+        int blockSize = config.getInt("block_size");
         this.screenWidth = colAmount * blockSize;
         this.screenHeight = rowAmount * blockSize;
     }
@@ -91,7 +91,7 @@ public class Board extends JPanel implements IBoardStateObserver {
                 Config config = Config.getInstance();
 
                 /*If Pacman is not controlled by keyboard, we should not listen for keys*/
-                if ((boolean)config.getConfig("ai_enabled"))
+                if (config.getBoolean("ai_enabled"))
                     return;
 
                 int key = e.getKeyCode();
@@ -125,7 +125,7 @@ public class Board extends JPanel implements IBoardStateObserver {
         short i = 0;
         int x, y;
         Config config = Config.getInstance();
-        int blockSize = (int)config.getConfig("block_size");
+        int blockSize = config.getInt("block_size");
 
         for (y = 0; y < screenHeight; y += blockSize) {
             for (x = 0; x < screenWidth; x += blockSize) {
@@ -179,7 +179,7 @@ public class Board extends JPanel implements IBoardStateObserver {
 
         Graphics2D g2d = (Graphics2D) g;
         Config config = Config.getInstance();
-        int blockSize = (int)config.getConfig("block_size");
+        int blockSize = config.getInt("block_size");
 
         g2d.setColor(cellColor);
         g2d.fillRect(0, 0, this.screenWidth, this.screenHeight);

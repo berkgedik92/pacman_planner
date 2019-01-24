@@ -43,7 +43,7 @@ public class SATPlanner implements IPlanner {
         try {
 //            Config config = Config.getInstance();
             Config config = Config.getInstance();
-            PrintWriter w = new PrintWriter(new File(config.getConfig("maze_file") + ".cnf"));
+            PrintWriter w = new PrintWriter(new File(config.get("maze_file") + ".cnf"));
 
             w.println("p cnf " + timeLimit * state.colAmount * state.rowAmount + " " + clauses.size());
             for (SATClause clause : clauses) {
