@@ -1,7 +1,5 @@
 package Game;
 
-import lombok.Getter;
-
 import java.lang.Math;
 
 public class Position {

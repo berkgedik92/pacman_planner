@@ -27,11 +27,15 @@ public class Config {
     }
 
     public Object get(String key) {
-        return this.cfg.getOrDefault(key, null);
+        Object obj = this.cfg.get(key);
+        if (obj == null)
+            throw new RuntimeException("Cannot find the following key in configuration file : " + key);
+        return obj;
     }
 
     public Color getColor(String key) {
-        return null;
+        String[] rgb = getString(key).split(",");
+        return new Color(Integer.parseInt(rgb[0]), Integer.parseInt(rgb[1]), Integer.parseInt(rgb[2]));
     }
 
     public boolean getBoolean(String key) {

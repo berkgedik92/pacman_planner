@@ -33,6 +33,7 @@ public class Monster extends GameCreature {
         this.policy = old.policy;
         this.item = old.item;
         this.seqUp = old.seqUp;
+        this.config = Config.getInstance();
     }
 
     public void makeDecision(BoardState state) throws Exception {
