@@ -4,14 +4,13 @@ import java.util.*;
 
 import IPlanner.IPlanner;
 import Main.Config;
-import Main.YamlConfig;
 import OnlinePlanner.ApproximateQPlanner;
 
 public class Pacman extends GameCreature {
 
     private boolean planFailed = false;
     private Queue<Action> plannedActions = new LinkedList<>();
-    private YamlConfig config;
+    private Config config;
 
     private IPlanner planner;
 
@@ -19,7 +18,7 @@ public class Pacman extends GameCreature {
         this.currentPosition = new Position(pos);
         this.oldPosition = new Position(pos.y, pos.x);
         this.planner = new ApproximateQPlanner();
-        this.config = YamlConfig.getInstance();
+        this.config = Config.getInstance();
     }
 
     public IPlanner getPlanner() {

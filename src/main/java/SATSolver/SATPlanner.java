@@ -1,9 +1,8 @@
 package SATSolver;
 
-import Main.Config;
 import Game.*;
 import IPlanner.IPlanner;
-import Main.YamlConfig;
+import Main.Config;
 
 import java.io.File;
 import java.io.PrintWriter;
@@ -43,7 +42,7 @@ public class SATPlanner implements IPlanner {
     private void writeToFile(int timeLimit, BoardState state, List<SATClause> clauses) {
         try {
 //            Config config = Config.getInstance();
-            YamlConfig config = YamlConfig.getInstance();
+            Config config = Config.getInstance();
             PrintWriter w = new PrintWriter(new File(config.getConfig("maze_file") + ".cnf"));
 
             w.println("p cnf " + timeLimit * state.colAmount * state.rowAmount + " " + clauses.size());

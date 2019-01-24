@@ -1,7 +1,6 @@
 package Game;
 
 import Main.Config;
-import Main.YamlConfig;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -17,7 +16,7 @@ import javax.swing.JPanel;
 
 public class Board extends JPanel {
 
-    private YamlConfig config;
+    private Config config;
     private Image ii;
 
     /*Colors that we use in the game*/
@@ -68,7 +67,7 @@ public class Board extends JPanel {
 
         this.state = new BoardState(colAmount, rowAmount, boardData, initialPos);
 
-        this.config = YamlConfig.getInstance();
+        this.config = Config.getInstance();
 
         addKeyListener(new TAdapter());
         setFocusable(true);
@@ -200,7 +199,7 @@ public class Board extends JPanel {
 
 //            Config config = Config.getInstance();
 
-            YamlConfig config = YamlConfig.getInstance();
+            Config config = Config.getInstance();
 
             /*If Pacman is not controlled by keyboard, we should not listen for keys*/
             if ((boolean)config.getConfig("ai_enabled"))//config.isAutomatic())

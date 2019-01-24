@@ -1,7 +1,6 @@
 package Game;
 
 import Main.Config;
-import Main.YamlConfig;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -312,7 +311,7 @@ public class BoardState {
             }
         }
 
-        YamlConfig config = YamlConfig.getInstance();
+        Config config = Config.getInstance();
 
         if (collision) {
             if (pacman.getPlanner().isTrained())

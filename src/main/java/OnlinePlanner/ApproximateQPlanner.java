@@ -13,12 +13,10 @@ import java.util.List;
 import java.util.HashMap;
 
 import IPlanner.IPlanner;
-import Main.Config;
 import Game.Action;
 import Game.BoardState;
 import Game.Monster;
-import Main.YamlConfig;
-import org.yaml.snakeyaml.Yaml;
+import Main.Config;
 
 public class ApproximateQPlanner implements IPlanner {
 
@@ -113,7 +111,7 @@ public class ApproximateQPlanner implements IPlanner {
 	}
 
 	public void train(BoardState state) throws Exception {
-		YamlConfig config = YamlConfig.getInstance();
+		Config config = Config.getInstance();
 		int trainingEpisodes = (int)config.getConfig("training_episodes");
 		System.err.println("=========== " + trainingEpisodes + " TRAINING EPISODES STARTED ==============");
 		int episode = 0, victories = 0;
@@ -160,7 +158,7 @@ public class ApproximateQPlanner implements IPlanner {
 	}
 
 	private void test(BoardState state) throws Exception {
-		YamlConfig config = YamlConfig.getInstance();
+		Config config = Config.getInstance();
 		int testEpisodes = (int)config.getConfig("test_episodes");
         System.err.println("=========== " + testEpisodes + " TEST GAMES STARTED ==============");
         int episode = 0, victories = 0;

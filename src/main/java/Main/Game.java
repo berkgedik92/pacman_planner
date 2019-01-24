@@ -8,14 +8,14 @@ import java.util.List;
 import javax.swing.JFrame;
 import Game.*;
 import OnlinePlanner.ApproximateQPlanner;
-import com.sun.org.apache.xpath.internal.operations.Bool;
+import org.apache.commons.cli.*;
 
 public class Game extends JFrame {
 
     private Game() {
 
 //        Config config = Config.getInstance();
-        YamlConfig config = YamlConfig.getInstance();
+        Config config = Config.getInstance();
         List<String> lines;
 
         try {
@@ -87,9 +87,25 @@ public class Game extends JFrame {
         Board.getInstance().startCycle();
     }
 
+    public static CommandLine parseArgs(String[] args) throws ParseException {
+        Options options = new Options();
+
+        Option configOption = new Option("c", "config", true, "A configuration file (in YAML format)");
+        configOption.setRequired(true);
+        options.addOption(configOption);
+
+        CommandLineParser parser = new DefaultParser();
+        return parser.parse(options, args);
+    }
+
     public static void main(String[] args) {
-//        Config.setByProgramArguments(args);
-        YamlConfig.load("/home/dmytro/pacman_planner/config.yaml");
+        try {
+            CommandLine parsedArgs = parseArgs(args);
+            Config.load(parsedArgs.getOptionValue("config"));
+        } catch (ParseException e) {
+            System.err.println("Couldn't parse command line arguments.");
+            System.exit(1);
+        }
 
         EventQueue.invokeLater(() -> {
             Game ex = new Game();
