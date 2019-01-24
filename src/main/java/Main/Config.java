@@ -2,6 +2,7 @@ package Main;
 
 import org.yaml.snakeyaml.Yaml;
 
+import java.awt.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -29,6 +30,10 @@ public class Config {
         return this.cfg.getOrDefault(key, null);
     }
 
+    public Color getColor(String key) {
+        return null;
+    }
+
     public boolean getBoolean(String key) {
         return (boolean) get(key);
     }
@@ -42,7 +47,7 @@ public class Config {
     }
 
     public static Config getInstance(){
-        if(instance == null) {
+        if (instance == null) {
             instance = new Config();
         }
         return instance;

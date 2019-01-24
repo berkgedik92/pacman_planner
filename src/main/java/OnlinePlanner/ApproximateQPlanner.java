@@ -11,7 +11,6 @@ import java.util.Arrays;
 import java.util.Random;
 import java.util.List;
 import java.util.HashMap;
-
 import IPlanner.IPlanner;
 import Game.Action;
 import Game.BoardState;
@@ -32,8 +31,11 @@ public class ApproximateQPlanner implements IPlanner {
 	private double livingReward = -5.0;
 	private double[] weights;
 
+	private Config config;
+
 	public ApproximateQPlanner() {
 		weights = new double[FeatureExtractor.FEATURES_NUM];
+		config = Config.getInstance();
 		if (useStats) {
 			actDistribution = new HashMap<>();
 			for (Action a : Action.values())
@@ -111,7 +113,6 @@ public class ApproximateQPlanner implements IPlanner {
 	}
 
 	public void train(BoardState state) throws Exception {
-		Config config = Config.getInstance();
 		int trainingEpisodes = config.getInt("training_episodes");
 		System.err.println("=========== " + trainingEpisodes + " TRAINING EPISODES STARTED ==============");
 		int episode = 0, victories = 0;
@@ -158,7 +159,6 @@ public class ApproximateQPlanner implements IPlanner {
 	}
 
 	private void test(BoardState state) throws Exception {
-		Config config = Config.getInstance();
 		int testEpisodes = config.getInt("test_episodes");
         System.err.println("=========== " + testEpisodes + " TEST GAMES STARTED ==============");
         int episode = 0, victories = 0;

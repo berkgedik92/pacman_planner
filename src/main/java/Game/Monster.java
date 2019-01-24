@@ -12,10 +12,12 @@ public class Monster extends GameCreature {
     private Action[] policy = null;   // a set of predefined deterministic moves
     public int item = 0;    // current move index of a predefined policy
     public boolean seqUp = true;   //if moves are deterministic, next move will be policy[item+1] or policy[item-1]
+    private Config config;
 
     public Monster(Position pos) {
         this.currentPosition = pos;
         this.oldPosition = new Position(pos.y, pos.x);
+        this.config = Config.getInstance();
     }
 
     public void setPolicy(Action[] actions)
@@ -35,7 +37,6 @@ public class Monster extends GameCreature {
 
     public void makeDecision(BoardState state) throws Exception {
 
-        Config config = Config.getInstance();
         Action decidedAction = (config.getBoolean("deterministic_monsters")) ? makeDeterministicDecision() : makeRandomDecision(state);
 
         if (!state.checkActionValidity(currentPosition, decidedAction))

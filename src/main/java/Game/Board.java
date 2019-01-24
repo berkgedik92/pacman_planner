@@ -1,7 +1,6 @@
 package Game;
 
 import Main.Config;
-
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics;
@@ -17,7 +16,6 @@ import javax.swing.JPanel;
 public class Board extends JPanel implements IBoardStateObserver {
 
     private Config config;
-    private Image ii;
 
     /*Colors that we use in the game*/
     private final Color dotColor    = new Color(192, 192, 0); //Color of dots
@@ -37,7 +35,6 @@ public class Board extends JPanel implements IBoardStateObserver {
     private Image pacmanImage;
 
     /*Necessary objects for turn-based game*/
-    //private final GameCycle cycle = GameCycle.getInstance();
     private final Object lock = new Object();
 
     private Action selectedAction = null;
@@ -56,7 +53,6 @@ public class Board extends JPanel implements IBoardStateObserver {
 
     @Override
     public void initialize(int rowAmount, int colAmount) {
-        Config config = Config.getInstance();
         int blockSize = config.getInt("block_size");
         this.screenWidth = colAmount * blockSize;
         this.screenHeight = rowAmount * blockSize;
@@ -68,6 +64,8 @@ public class Board extends JPanel implements IBoardStateObserver {
     }
 
     private Board() {
+
+        config = Config.getInstance();
 
         //Load Images
         try {
@@ -88,8 +86,6 @@ public class Board extends JPanel implements IBoardStateObserver {
 
             @Override
             public void keyPressed(KeyEvent e) {
-                Config config = Config.getInstance();
-
                 /*If Pacman is not controlled by keyboard, we should not listen for keys*/
                 if (config.getBoolean("ai_enabled"))
                     return;
@@ -114,7 +110,6 @@ public class Board extends JPanel implements IBoardStateObserver {
             }
         });
 
-        this.config = Config.getInstance();
         setFocusable(true);
         setBackground(cellColor);
         setDoubleBuffered(true);
@@ -124,7 +119,6 @@ public class Board extends JPanel implements IBoardStateObserver {
 
         short i = 0;
         int x, y;
-        Config config = Config.getInstance();
         int blockSize = config.getInt("block_size");
 
         for (y = 0; y < screenHeight; y += blockSize) {
@@ -178,7 +172,6 @@ public class Board extends JPanel implements IBoardStateObserver {
     private void doDrawing(Graphics g) {
 
         Graphics2D g2d = (Graphics2D) g;
-        Config config = Config.getInstance();
         int blockSize = config.getInt("block_size");
 
         g2d.setColor(cellColor);

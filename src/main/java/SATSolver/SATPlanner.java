@@ -3,7 +3,6 @@ package SATSolver;
 import Game.*;
 import IPlanner.IPlanner;
 import Main.Config;
-
 import java.io.File;
 import java.io.PrintWriter;
 import java.util.*;
@@ -14,6 +13,11 @@ public class SATPlanner implements IPlanner {
     private static final long threshold = 3000000;
     private boolean first = true;
     private Queue<Action> plannedActions = null;
+    private Config config;
+
+    public SATPlanner() {
+        config = Config.getInstance();
+    }
 
     @Override
     public Action getNextAction(BoardState state) {
@@ -41,7 +45,6 @@ public class SATPlanner implements IPlanner {
 
     private void writeToFile(int timeLimit, BoardState state, List<SATClause> clauses) {
         try {
-//            Config config = Config.getInstance();
             Config config = Config.getInstance();
             PrintWriter w = new PrintWriter(new File(config.get("maze_file") + ".cnf"));
 

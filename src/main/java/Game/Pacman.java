@@ -26,8 +26,6 @@ public class Pacman extends GameCreature {
     }
 
     public void makeDecision(Action chosenAction, BoardState state) throws Exception {
-        Config config = Config.getInstance();
-
         if (chosenAction == null)
             chosenAction = this.planner.getNextAction(state);
         

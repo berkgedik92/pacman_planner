@@ -14,6 +14,8 @@ public class Game extends JFrame implements Runnable, IBoardStateObserver {
 
     private boolean isFinished = false;
     private Thread thread;
+    private Config config;
+    private Board board;
 
     @Override
     public void initialize(int rowAmount, int colAmount) {}
@@ -57,11 +59,11 @@ public class Game extends JFrame implements Runnable, IBoardStateObserver {
 
     private Game() {
 
-        Config config = Config.getInstance();
+        config = Config.getInstance();
         List<String> lines;
 
         try {
-//            lines = Files.readAllLines(Paths.get(config.getMazeFile()));
+            System.out.println(config.getString("maze_file"));
             lines = Files.readAllLines(Paths.get(config.getString("maze_file")));
         }
         catch (Exception e) {
@@ -91,8 +93,9 @@ public class Game extends JFrame implements Runnable, IBoardStateObserver {
                 boardData[i * colAmount + y] = Short.parseShort(cellData[y]);
         }
 
+        board = Board.getInstance();
         state = new BoardState(colAmount, rowAmount, boardData, initialPositions);
-        state.attachObserver(Board.getInstance());
+        state.attachObserver(board);
         state.attachObserver(this);
 
         //Get monster actions (if there is any and if we run in deterministic mode)
@@ -118,7 +121,7 @@ public class Game extends JFrame implements Runnable, IBoardStateObserver {
             }
         }
 
-        add(Board.getInstance());
+        add(board);
         setTitle("Pacman Game");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
 
