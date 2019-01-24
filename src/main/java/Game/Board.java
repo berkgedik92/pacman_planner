@@ -3,6 +3,7 @@ package Game;
 import Main.Config;
 
 import java.awt.BasicStroke;
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
@@ -14,6 +15,18 @@ import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 
 public class Board extends JPanel implements IBoardStateObserver {
+
+    private Config config;
+    private Image ii;
+
+    /*Colors that we use in the game*/
+    private final Color dotColor    = new Color(192, 192, 0); //Color of dots
+    private final Color mazeColor   = new Color(5, 100, 5);   //Color of borders
+    private final Color cellColor   = new Color(0, 0, 0);     //Color of cells and background
+
+    /*How px a cell should be (width and height), our image file has image with size
+    22*22 and line thickness is 1 so this must be 22 + 1 + 1 = 24 */
+    public static final int blockSize = 24;
 
     /*Variables about the screenSize (width = colAmount * blockSize and height = rowAmount * blockSize)*/
     private int screenWidth;
@@ -44,8 +57,9 @@ public class Board extends JPanel implements IBoardStateObserver {
     @Override
     public void initialize(int rowAmount, int colAmount) {
         Config config = Config.getInstance();
-        this.screenWidth = colAmount * config.getBlockSize();
-        this.screenHeight = rowAmount * config.getBlockSize();
+        int blockSize = (int)config.getConfig("block_size");
+        this.screenWidth = colAmount * blockSize;
+        this.screenHeight = rowAmount * blockSize;
     }
 
     @Override
@@ -77,7 +91,7 @@ public class Board extends JPanel implements IBoardStateObserver {
                 Config config = Config.getInstance();
 
                 /*If Pacman is not controlled by keyboard, we should not listen for keys*/
-                if (config.isAutomatic())
+                if ((boolean)config.getConfig("ai_enabled"))
                     return;
 
                 int key = e.getKeyCode();
@@ -100,26 +114,23 @@ public class Board extends JPanel implements IBoardStateObserver {
             }
         });
 
+        this.config = Config.getInstance();
         setFocusable(true);
-        setBackground(Config.getInstance().getCellColor());
+        setBackground(cellColor);
         setDoubleBuffered(true);
     }
-
-    //////////////////////////////////////////////
-    // UI methods. Just DON'T TOUCH OR USE THEM //
-    //////////////////////////////////////////////
 
     private void drawMaze(Graphics2D g2d) {
 
         short i = 0;
         int x, y;
         Config config = Config.getInstance();
-        int blockSize = config.getBlockSize();
+        int blockSize = (int)config.getConfig("block_size");
 
         for (y = 0; y < screenHeight; y += blockSize) {
             for (x = 0; x < screenWidth; x += blockSize) {
 
-                g2d.setColor(config.getMazeColor());
+                g2d.setColor(mazeColor);
                 g2d.setStroke(new BasicStroke(2));
 
                 if ((boardData[i] & 1) != 0) {
@@ -141,7 +152,7 @@ public class Board extends JPanel implements IBoardStateObserver {
                 }
 
                 if ((boardData[i] & 16) != 0) {
-                    g2d.setColor(config.getDotColor());
+                    g2d.setColor(dotColor);
                     g2d.fillRect(x + 11, y + 11, 2, 2);
                 }
 
@@ -168,9 +179,9 @@ public class Board extends JPanel implements IBoardStateObserver {
 
         Graphics2D g2d = (Graphics2D) g;
         Config config = Config.getInstance();
-        int blockSize = config.getBlockSize();
+        int blockSize = (int)config.getConfig("block_size");
 
-        g2d.setColor(config.getCellColor());
+        g2d.setColor(cellColor);
         g2d.fillRect(0, 0, this.screenWidth, this.screenHeight);
 
         drawMaze(g2d);

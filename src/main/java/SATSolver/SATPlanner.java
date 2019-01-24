@@ -1,28 +1,49 @@
 package SATSolver;
 
-import Main.Config;
 import Game.*;
 import IPlanner.IPlanner;
+import Main.Config;
+
 import java.io.File;
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class SATPlanner implements IPlanner {
 
     private static final boolean testMode = false;
     private static final long threshold = 3000000;
     private boolean first = true;
+    private Queue<Action> plannedActions = null;
+
+    @Override
+    public Action getNextAction(BoardState state) {
+        if (plannedActions == null) {
+            plannedActions = new LinkedList<>();
+            List<Action> actions = makePlan(state);
+            plannedActions.addAll(actions);
+        }
+
+        if (plannedActions.size() == 0) {
+            System.err.println("Cannot make a plan! Pacman will stop all time");
+            return Action.STOP;
+        }
+        return plannedActions.poll();
+    }
 
     public IPlanner reset() {
         return this;
     }
 
+    @Override
+    public boolean isTrained() {
+        return false;
+    }
+
     private void writeToFile(int timeLimit, BoardState state, List<SATClause> clauses) {
         try {
+//            Config config = Config.getInstance();
             Config config = Config.getInstance();
-            PrintWriter w = new PrintWriter(new File(config.getMazeFile() + ".cnf"));
+            PrintWriter w = new PrintWriter(new File(config.getConfig("maze_file") + ".cnf"));
 
             w.println("p cnf " + timeLimit * state.colAmount * state.rowAmount + " " + clauses.size());
             for (SATClause clause : clauses) {
@@ -311,4 +332,6 @@ public class SATPlanner implements IPlanner {
 
         return solution;
     }
+
+
 }

@@ -77,11 +77,21 @@ public class JavaFF implements IPlanner
 
     }
 
-    public IPlanner reset() {
+	@Override
+	public Action getNextAction(BoardState state) {
+		return null;
+	}
+
+	public IPlanner reset() {
         return new JavaFF();
     }
 
-    boolean isWorked = false;
+	@Override
+	public boolean isTrained() {
+		return false;
+	}
+
+	boolean isWorked = false;
 
     //A* algorithm should come here
     public List<Action> makePlan(BoardState state) {

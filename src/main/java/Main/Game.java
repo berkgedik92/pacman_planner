@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JFrame;
 import Game.*;
+import OnlinePlanner.ApproximateQPlanner;
+import org.apache.commons.cli.*;
 
 public class Game extends JFrame implements Runnable, IBoardStateObserver {
 
@@ -36,7 +38,7 @@ public class Game extends JFrame implements Runnable, IBoardStateObserver {
             try {
                 //Make pacman make a decision
                 Config config = Config.getInstance();
-                state.pacman.makeDecision(config.isAutomatic() ? null : Board.getInstance().moveAgentByKeyboard(state), state);
+                state.pacman.makeDecision((boolean)config.getConfig("ai_enabled") ? null : Board.getInstance().moveAgentByKeyboard(state), state);
 
                 //Make all monsters make a decision
                 for (int i = 0; i < state.monsterAmount; i++)
@@ -59,7 +61,9 @@ public class Game extends JFrame implements Runnable, IBoardStateObserver {
         List<String> lines;
 
         try {
-            lines = Files.readAllLines(Paths.get(config.getMazeFile()));
+//            lines = Files.readAllLines(Paths.get(config.getMazeFile()));
+            System.out.println((String)config.getConfig("maze_file"));
+            lines = Files.readAllLines(Paths.get((String) config.getConfig("maze_file")));
         }
         catch (Exception e) {
             throw new RuntimeException("Could not read the maze file");
@@ -92,7 +96,7 @@ public class Game extends JFrame implements Runnable, IBoardStateObserver {
         state.attachObserver(Board.getInstance());
 
         //Get monster actions (if there is any and if we run in deterministic mode)
-        if (config.isMonstersDeterministic()) {
+        if ((boolean) config.getConfig("deterministic_monsters")) {//config.isMonstersDeterministic()) {
             List<Action[]> monsterActions = new ArrayList<>();
             for (int i = 0; i < monsterAmount; i++) {
                 String[] moves = lines.get(i + rowAmount + 2).split(",");
@@ -104,11 +108,10 @@ public class Game extends JFrame implements Runnable, IBoardStateObserver {
             state.setMonsterMoves(monsterActions);
         }
 
-        if (config.isOnlinePlanning()) {
+        if ((boolean) config.getConfig("online_planning")) {//config.isOnlinePlanning()) {
             try {
-                state.pacman.getOnlinePlanner().train(state);
-                config.markTrainingFinished();
-                state.pacman.getOnlinePlanner().test(state);
+                ApproximateQPlanner planner = (ApproximateQPlanner)state.pacman.getPlanner();
+                planner.train(state);
             }
             catch (Exception e) {
                 throw new RuntimeException("Exception on OnlinePlanner : " + e.toString());
@@ -120,7 +123,8 @@ public class Game extends JFrame implements Runnable, IBoardStateObserver {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
 
         //it was 380 * 420 for 15*15 board and 24px blockSize
-        setSize(config.getBlockSize() * colAmount + 20, config.getBlockSize() * rowAmount + 60);
+        int blockSize = (int)config.getConfig("block_size");
+        setSize(blockSize * colAmount + 20, blockSize * rowAmount + 60);
         setLocationRelativeTo(null);
         setVisible(true);
 
@@ -128,9 +132,25 @@ public class Game extends JFrame implements Runnable, IBoardStateObserver {
         thread.start();
     }
 
-    public static void main(String[] args) {
+    public static CommandLine parseArgs(String[] args) throws ParseException {
+        Options options = new Options();
 
-        Config.setByProgramArguments(args);
+        Option configOption = new Option("c", "config", true, "A configuration file (in YAML format)");
+        configOption.setRequired(true);
+        options.addOption(configOption);
+
+        CommandLineParser parser = new DefaultParser();
+        return parser.parse(options, args);
+    }
+
+    public static void main(String[] args) {
+        try {
+            CommandLine parsedArgs = parseArgs(args);
+            Config.load(parsedArgs.getOptionValue("config"));
+        } catch (ParseException e) {
+            System.err.println("Couldn't parse command line arguments.");
+            System.exit(1);
+        }
 
         EventQueue.invokeLater(() -> {
             Game ex = new Game();

@@ -25,11 +25,11 @@ class FeatureExtractor {
 		double[] features = new double[FEATURES_NUM];
 		features[0] = 1;
 
-		Position pacmanCurPos = state.pacman.getCurrentPosition();
+		Position pacmanCurPos = state.pacman.currentPosition;
 		Position pacmanNextPos = Position.giveConsequence(pacmanCurPos, nextAction);
 
 		for (Monster m : state.monsters) {
-			Position monsterCurPos = m.getCurrentPosition();
+			Position monsterCurPos = m.currentPosition;
 			for (Position mp : state.getValidNeighborCells(monsterCurPos)) {
 				if (Position.isEqual(mp, pacmanNextPos))
 					features[3]++;
@@ -43,7 +43,7 @@ class FeatureExtractor {
 		features[2] = (double)(state.closestFood(pacmanNextPos)) / (state.rowAmount* state.colAmount);
 
 		// should be general cycle avoidance
-		features[4] = (Position.isEqual(state.pacman.getOldPosition(), pacmanNextPos) ? 1 : 0);
+		features[4] = (Position.isEqual(state.pacman.oldPosition, pacmanNextPos) ? 1 : 0);
 		return features;
 	}
 }

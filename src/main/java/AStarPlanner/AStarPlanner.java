@@ -20,8 +20,18 @@ public class AStarPlanner implements IPlanner {
 
     public AStarPlanner() {}
 
+	@Override
+	public Action getNextAction(BoardState state) {
+		return null;
+	}
+
 	public IPlanner reset() {
 		return new AStarPlanner();
+	}
+
+	@Override
+	public boolean isTrained() {
+		return false;
 	}
 
 	// A* algorithm should come here

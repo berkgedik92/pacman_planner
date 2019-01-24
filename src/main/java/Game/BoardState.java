@@ -263,7 +263,7 @@ public class BoardState {
     }
 
     public boolean isGameOver() {
-        return isPacmanDead ||remainingDotAmount == 0;
+        return isPacmanDead || remainingDotAmount == 0;
     }
 
     public short closestMonster(Position pos) {
@@ -345,7 +345,7 @@ public class BoardState {
         Config config = Config.getInstance();
 
         if (collision) {
-            if (!config.isTraining())
+            if (pacman.getPlanner().isTrained())
                 pushFinishSignal();
             score -= 500;
             isPacmanDead = true;
@@ -372,7 +372,7 @@ public class BoardState {
                 finished = false;
 
         if (finished) {
-            if (!config.isTraining())
+            if (pacman.getPlanner().isTrained())
                 pushFinishSignal();
             System.err.println(remainingDotAmount);
             System.err.println("Pacman won the game!");

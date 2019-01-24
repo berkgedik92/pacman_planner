@@ -36,7 +36,7 @@ public class Monster extends GameCreature {
     public void makeDecision(BoardState state) throws Exception {
 
         Config config = Config.getInstance();
-        Action decidedAction = (config.isMonstersDeterministic()) ? makeDeterministicDecision() : makeRandomDecision(state);
+        Action decidedAction = ((boolean) config.getConfig("deterministic_monsters")) ? makeDeterministicDecision() : makeRandomDecision(state);
 
         if (!state.checkActionValidity(currentPosition, decidedAction))
             throw new Exception("Monster object tries to make invalid move!");
