@@ -28,7 +28,7 @@ public class AStarPlanner extends AbstractPlanner {
 
 	@Override
 	public boolean isTrained() {
-		return false;
+		return true;
 	}
 
 	public List<Action> makePlan(BoardState state)  {

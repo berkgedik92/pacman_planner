@@ -31,7 +31,7 @@ public class SATPlanner extends AbstractPlanner {
 
     @Override
     public boolean isTrained() {
-        return false;
+        return true;
     }
 
     private void writeToFile(int timeLimit, BoardState state, List<SATClause> clauses) {
