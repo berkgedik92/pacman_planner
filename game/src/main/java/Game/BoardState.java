@@ -313,8 +313,8 @@ public class BoardState {
     public void checkMaze() {
 
         /*Check if a collision happen:
-        (i.e either Game.Pacman and a monster is in the same cell or a monster was
-        in the cell Game.Pacman was and Game.Pacman was in the cell this monster was*/
+        (i.e either Pacman and a monster is in the same cell or a monster was
+        in the cell Pacman was and Pacman was in the cell this monster was*/
 
         boolean collision = false;
 

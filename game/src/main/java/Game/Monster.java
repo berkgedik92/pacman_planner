@@ -103,8 +103,8 @@ public class Monster extends GameCreature {
 
         List<Action> possibleActions = new ArrayList<>();
 
-        //Let's not allow monsters to STOP for now (for debug purposes)
-        //possibleActions.add(Game.Action.STOP);
+        // Let's not allow monsters to STOP for now
+        //possibleActions.add(Action.STOP);
 
         //if there is no left wall on the cell and monster is not in the leftmost column
         if ((state.boardData[pos] & 1) == 0 && (pos % state.colAmount > 0))

@@ -3,7 +3,7 @@ package Game;
 import java.util.*;
 
 import Planners.AStarPlanner.AStarPlanner;
-import Planners.IPlanner;
+import Planners.AbstractPlanner;
 import Main.Config;
 import Planners.OnlinePlanner.ApproximateQPlanner;
 import Planners.SATSolver.SATPlanner;
@@ -13,7 +13,7 @@ public class Pacman extends GameCreature {
     private boolean planFailed = false;
     private Queue<Action> plannedActions = new LinkedList<>();
 
-    private IPlanner planner;
+    private AbstractPlanner planner;
 
     public Pacman(Position pos) {
         this.currentPosition = new Position(pos);
@@ -37,7 +37,7 @@ public class Pacman extends GameCreature {
         }
     }
 
-    public IPlanner getPlanner() {
+    public AbstractPlanner getPlanner() {
         return planner;
     }
 

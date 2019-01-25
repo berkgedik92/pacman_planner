@@ -10,7 +10,7 @@ import Game.*;
 import Planners.OnlinePlanner.ApproximateQPlanner;
 import org.apache.commons.cli.*;
 
-public class Game extends JFrame implements Runnable, IBoardStateObserver {
+public class Runner extends JFrame implements Runnable, IBoardStateObserver {
 
     private boolean isFinished = false;
     private Thread thread;
@@ -58,7 +58,7 @@ public class Game extends JFrame implements Runnable, IBoardStateObserver {
         }
     }
 
-    private Game() {
+    private Runner() {
 
         config = Config.getInstance();
         List<String> lines;
@@ -123,7 +123,7 @@ public class Game extends JFrame implements Runnable, IBoardStateObserver {
         }
 
         add(board);
-        setTitle("Pacman Game");
+        setTitle("Pacman Runner");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
 
         //it was 380 * 420 for 15*15 board and 24px blockSize
@@ -132,7 +132,7 @@ public class Game extends JFrame implements Runnable, IBoardStateObserver {
         setLocationRelativeTo(null);
         setVisible(true);
 
-        thread = new Thread(this, "Game Cycle Thread");
+        thread = new Thread(this, "Runner Cycle Thread");
         thread.start();
     }
 
@@ -157,7 +157,7 @@ public class Game extends JFrame implements Runnable, IBoardStateObserver {
         }
 
         EventQueue.invokeLater(() -> {
-            Game ex = new Game();
+            Runner ex = new Runner();
             ex.setVisible(true);
         });
     }

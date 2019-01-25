@@ -1,10 +1,11 @@
 package Planners.AStarPlanner;
 
 import Game.*;
-import Planners.IPlanner;
+import Planners.AbstractPlanner;
+
 import java.util.*;
 
-public class AStarPlanner implements IPlanner {
+public class AStarPlanner extends AbstractPlanner {
 
 	private Queue<Action> plannedActions = null;
 
@@ -34,16 +35,11 @@ public class AStarPlanner implements IPlanner {
 		return plannedActions.poll();
     }
 
-	public IPlanner reset() {
-		return new AStarPlanner();
-	}
-
 	@Override
 	public boolean isTrained() {
 		return false;
 	}
 
-	// A* algorithm should come here
 	public List<Action> makePlan(BoardState state)  {
 		long startTime = System.currentTimeMillis();
 		List<Action> plan = new ArrayList<>();
@@ -65,7 +61,7 @@ public class AStarPlanner implements IPlanner {
 		return plan;
 	}
 
-	private Node search(BoardState wrapper) throws Exception {
+	private Node search(BoardState wrapper) {
 		//two lists keep track of states traversed and future states to check
 		ArrayList<Node> open = new ArrayList<>();
 		HashSet<String> closed = new HashSet<>();

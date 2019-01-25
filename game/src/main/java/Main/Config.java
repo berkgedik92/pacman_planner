@@ -14,15 +14,20 @@ public class Config {
 
     private Config() {}
 
-    private Config(String fname) {
+    private Config(String fileName) {
         Yaml yaml = new Yaml();
         InputStream inputStream = null;
         try {
-            inputStream = new FileInputStream(new File(fname));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            inputStream = new FileInputStream(new File(fileName));
+        }
+        catch (FileNotFoundException e) {
+            throw new RuntimeException("Configuration file cannot be found.");
         }
         this.cfg = (Map) yaml.load(inputStream);
+
+        //If planner is not online and a user wants to use nondeterministic monsters, it is not allowed
+        if (!getString("planner").equals("online") && !getBoolean("deterministic_monsters"))
+            throw new RuntimeException("Nondeterministic monsters are allowed only if OnlinePlanner is used as the planner. Please fix your configuration.");
     }
 
     public Object get(String key) {
@@ -35,6 +40,10 @@ public class Config {
     public Color getColor(String key) {
         String[] rgb = getString(key).split(",");
         return new Color(Integer.parseInt(rgb[0]), Integer.parseInt(rgb[1]), Integer.parseInt(rgb[2]));
+    }
+
+    public double getDouble(String key) {
+        return (double) get(key);
     }
 
     public boolean getBoolean(String key) {
@@ -56,8 +65,8 @@ public class Config {
         return instance;
     }
 
-    public static void load(String fname) {
-        instance = new Config(fname);
+    public static void load(String fileName) {
+        instance = new Config(fileName);
     }
 
 

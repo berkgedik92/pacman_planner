@@ -11,32 +11,20 @@ import java.util.Arrays;
 import java.util.Random;
 import java.util.List;
 import java.util.HashMap;
-import Planners.IPlanner;
+import Planners.AbstractPlanner;
 import Game.Action;
 import Game.BoardState;
 import Game.Monster;
-import Main.Config;
 
-public class ApproximateQPlanner implements IPlanner {
+public class ApproximateQPlanner extends AbstractPlanner {
 
 	private HashMap<Short, Integer> actDistribution;
-
 	private boolean trained = false;
-
-	private boolean useStats = false;
-	private double learningRate = 0.1;
-	private double discount = 0.8;
-	private double trainingEpsilon = 0.05;
-	private double testEpsilon = 0;
-	private double livingReward = -5.0;
 	private double[] weights;
-
-	private Config config;
 
 	public ApproximateQPlanner() {
 		weights = new double[FeatureExtractor.FEATURES_NUM];
-		config = Config.getInstance();
-		if (useStats) {
+		if (config.getBoolean("op_use_stats")) {
 			actDistribution = new HashMap<>();
 			for (Action a : Action.values())
 				actDistribution.put(a.getCode(), 0);
@@ -66,29 +54,25 @@ public class ApproximateQPlanner implements IPlanner {
 			// System.err.println(Arrays.toString(features));
 			qValue = computeQValue(features);
 			// System.err.println(a + " " + qValue);
-			if (maxQValue < qValue || (useStats && maxQValue == qValue && 
+			if (maxQValue < qValue || (config.getBoolean("op_use_stats") && maxQValue == qValue &&
 				actDistribution.get(a.getCode()) < actDistribution.get(winner.getCode()))) {
 				maxQValue = qValue;
 				winner = a;
 			}
 		}
 		// System.err.println("\n");
-		if (useStats)
+		if (config.getBoolean("op_use_stats"))
 			actDistribution.put(winner.getCode(), actDistribution.get(winner.getCode()) + 1);
 		return winner;
 	}
 
+	@Override
 	public Action getNextAction(BoardState b) {
-		return new Random().nextDouble() < testEpsilon ? getRandomAction(b) : getPolicyAction(b);
+		return new Random().nextDouble() < config.getDouble("op_test_epsilon") ? getRandomAction(b) : getPolicyAction(b);
 	}
 
-	@Override
-	public IPlanner reset() {
-		return this;
-	}
-
-	@Override
-	public boolean isTrained() {
+    @Override
+    public boolean isTrained() {
 		return trained;
 	}
 
@@ -96,18 +80,18 @@ public class ApproximateQPlanner implements IPlanner {
 		// System.err.println("WEIGHTS " + Arrays.toString(weights));
 		double[] features = FeatureExtractor.getFeatures(old, act);
 		// System.err.println("FEATURES " + Arrays.toString(features));
-		double reward = next.score - old.score + livingReward;
+		double reward = next.score - old.score + config.getDouble("op_living_reward");
 
 		// System.err.println("REWARD " + reward);
 		double qValue = computeQValue(features);
 		// might be substituted with just state policy lookup if we kept this policy
 		double expectedQValue = next.isGameOver() ? 0 : next.getValidActions(
 			next.pacman.currentPosition).stream().mapToDouble(x -> computeQValue(FeatureExtractor.getFeatures(next, x))).max().getAsDouble();
-		double difference = reward + discount * expectedQValue - qValue;
+		double difference = reward + config.getDouble("op_discount") * expectedQValue - qValue;
 
 		// System.err.println("GOT: " + reward + " EXPECT IN FUTURE: " + expectedQValue + " EXPECTED TO GET NOW: " + qValue);
 		for (int i = 0; i < weights.length; i++) {
-			weights[i] += learningRate * difference * features[i];
+			weights[i] += config.getDouble("op_learning_rate") * difference * features[i];
 		}
 		// System.err.println("WEIGHTS " + Arrays.toString(weights) + "\n\n");
 	}
@@ -125,7 +109,7 @@ public class ApproximateQPlanner implements IPlanner {
 				Action decision;
 
 				// here need to try simulated annealing idea
-				if (rnd.nextDouble() < trainingEpsilon)
+				if (rnd.nextDouble() < config.getDouble("op_training_epsilon"))
 					decision = getRandomAction(playBoard);
 				else
 					decision = getPolicyAction(playBoard);
@@ -171,7 +155,7 @@ public class ApproximateQPlanner implements IPlanner {
                 Action decision;
 
                 // here need to try simulated annealing idea
-                if (rnd.nextDouble() < trainingEpsilon)
+                if (rnd.nextDouble() < config.getDouble("op_training_epsilon"))
                     decision = getRandomAction(playBoard);
                 else
                     decision = getPolicyAction(playBoard);

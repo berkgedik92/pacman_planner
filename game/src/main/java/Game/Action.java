@@ -8,7 +8,7 @@ public enum Action {
 
     private short code;
 
-    // Reverse-lookup map for getting an Game.Action from its code
+    // Reverse-lookup map for getting an Action from its code
     // A bit hilarious, actually that this feature is not implemented automatically in Java
     // TODO: maybe there exist a normal way - check it if there's time and necessity
     private static final Map<Short, Action> lookup = new HashMap<>();

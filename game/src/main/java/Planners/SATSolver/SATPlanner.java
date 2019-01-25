@@ -1,23 +1,18 @@
 package Planners.SATSolver;
 
 import Game.*;
-import Planners.IPlanner;
+import Planners.AbstractPlanner;
 import Main.Config;
 import java.io.File;
 import java.io.PrintWriter;
 import java.util.*;
 
-public class SATPlanner implements IPlanner {
+public class SATPlanner extends AbstractPlanner {
 
     private static final boolean testMode = false;
     private static final long threshold = 3000000;
     private boolean first = true;
     private Queue<Action> plannedActions = null;
-    private Config config;
-
-    public SATPlanner() {
-        config = Config.getInstance();
-    }
 
     @Override
     public Action getNextAction(BoardState state) {
@@ -32,10 +27,6 @@ public class SATPlanner implements IPlanner {
             return Action.STOP;
         }
         return plannedActions.poll();
-    }
-
-    public IPlanner reset() {
-        return this;
     }
 
     @Override
@@ -319,9 +310,7 @@ public class SATPlanner implements IPlanner {
                 long startTime = System.currentTimeMillis();
                 SATSolver mySolver = new SATSolver(clauses, timeLimit * colAmount * rowAmount);
                 solution = mySolver.DPLL();
-                long stopTime = System.currentTimeMillis();
-                long elapsedTime = stopTime - startTime;
-                System.out.println("Solved in : " + elapsedTime);
+                System.out.println("Solved in : " + (System.currentTimeMillis() - startTime));
                 first = false;
             }
             else {
