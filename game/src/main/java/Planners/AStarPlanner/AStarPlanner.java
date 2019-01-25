@@ -9,15 +9,6 @@ public class AStarPlanner extends AbstractPlanner {
 
 	private Queue<Action> plannedActions = null;
 
-	//TODO: Fix that according to Java8 standarts
-	private static final Comparator<Node> comparator = new Comparator<Node>() {
-		@Override
-		public int compare(Node arg0, Node arg1) {
-		if(arg0.getF()-arg1.getF()==0)return arg0.getH() - arg1.getH();
-		return arg0.getF()-arg1.getF();
-		}
-	};
-
     public AStarPlanner() {}
 
 	@Override
@@ -66,8 +57,14 @@ public class AStarPlanner extends AbstractPlanner {
 		ArrayList<Node> open = new ArrayList<>();
 		HashSet<String> closed = new HashSet<>();
 		open.add(new Node(wrapper.pacman.getCurrentPosition(), null, Action.STOP, wrapper));//add the first state to open
-		while(!open.isEmpty()){
-			open.sort(comparator);//sort list for faster runtime
+		while (!open.isEmpty()) {
+			//sort list for faster runtime
+		    open.sort((arg0, arg1) -> {
+			    if (arg0.getF() - arg1.getF() == 0)
+			        return arg0.getH() - arg1.getH();
+			    return arg0.getF() - arg1.getF();
+            });
+
 			Node q = open.remove(0);
 			Node next;
 			for (int move = 1; move < 5; move++) {
