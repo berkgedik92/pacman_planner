@@ -100,14 +100,11 @@ public class BoardState {
         for (int i = 0; i < state.monsters.size(); i++)
             this.monsters.add(new Monster(state.monsters.get(i)));
 
-
         if (action != null) {
             ActionConsequence cons = checkResult(action);
 
             pacman.setCurrentPosition(Position.giveConsequence(currentPacmanPosition, action));
             pacman.setOldPosition(currentPacmanPosition);
-
-            System.err.println("OLD: " + pacman.getOldPosition() + " NEW: " + pacman.getCurrentPosition());
 
             //Check if collision happened
             if (cons == ActionConsequence.MONSTER)
@@ -275,7 +272,7 @@ public class BoardState {
         return minDistance;
     }
 
-    public String hashFunction() {
+    public String getHashfOfState() {
 
         StringBuilder b = new StringBuilder();
 

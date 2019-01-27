@@ -2,8 +2,7 @@ maze_file: "example_mazes/maze.m"
 
 ai_enabled: true
 # planner can be one of the following: online / astar  / sat
-planner: online
-#TODO: If planner is not online and deterministic_monsters = false we should throw a runtime exception
+planner: astar
 deterministic_monsters: true
 training_episodes: 50
 test_episodes: 50
